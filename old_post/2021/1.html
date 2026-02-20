@@ -1,0 +1,121 @@
+<p><P Align=center>xXprogramXx</P</p>
+<hr>
+</html>
+<BODY BGCOLOR="BBBBBB"> </BODY>
+<P Align=center>เวลาตอนนี้ของประเทศไทย</P>
+<head><SCRIPT LANGUAGE="JavaScript">
+  <!--
+  function showFilled(Value) {
+  return (Value > 9) ? "" + Value : "0" + Value;
+  }
+  function StartClock24() {
+  TheTime = new Date;
+  document.clock.showTime.value = showFilled(TheTime.getHours()) + ":" +
+  showFilled(TheTime.getMinutes()) + ":" + showFilled(TheTime.getSeconds());
+  setTimeout("StartClock24()",1000)
+  }
+  //-->
+  </script>
+  <style type="text/css">
+  <!--
+  .input { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 8pt;border-style: none }
+  -->
+  </style>
+  <P Align=center><body><form name="clock"></P><P Align=center></P>
+    <P Align=center><input type="text" name="showTime" size="8" class="input"><P Align=center></P>
+  </form>
+  <P Align=center></P><body onload="StartClock24()"></P>
+    <P Align=center><SCRIPT language=Javascript>
+<!--
+day = new Date()
+hr = day.getHours()
+
+// ช่วงเวลา 0-5 นาฬิกา
+if (hr < "6") {
+document.write("ขณะนี้ดึกมากแล้วเลยเที่ยงคืนแล้ว น่าจะเข้านอนได้แล้วนะครับ เดี๋ยวพรุ่งนี้ไม่มีแรงทำงานนะครับ เป็นห่วง !")
+}
+
+// ช่วงเวลา 6-11 นาฬิกา
+else if (hr < "12") {
+document.write("สวัสดีตอนสายครับ !")
+}
+
+// ช่วงเวลา 12 นาฬิกา
+else if (hr < "13") {
+document.write("สวัสดีตอนเที่ยงครับ !")
+}
+
+// ช่วงเวลา 13-16 นาฬิกา
+else if (hr < "17") {
+document.write("สวัสดีตอนบ่ายครับ !")
+}
+
+// ช่วงเวลา 17-21 นาฬิกา
+else if (hr < "22") {
+document.write("เย็นแล้วนะครับ !")
+}
+
+// ช่วงเวลา 22-24 นาฬิกา
+else if (hr > "21") {
+document.write("ดึกแล้วนะครับ เตรียมตัวเข้านอนได้แล้วครับ !")
+}
+//-->
+</SCRIPT></P>
+    <P Align=center></P>
+    <P Align=center></P>
+    <P Align=center>_________________________________________</P>
+    <P Align=center>จะถึงวันวันคริสต์มาสละนะ:<</P>
+    <P Align=center>_________________________________________</P>
+    <SCRIPT LANGUAGE="JavaScript">
+
+var o=0,s=new Array()
+
+function go(n){
+var x=s[n],p=x.l+1,q=-1,y=x.s,z=x.w,t=document.getElementById("SC"+n).getElementsByTagName("TD")
+
+for(i=0;i<=x.t;i++){
+	if(y<p) p=y
+	if(y>q) q=y
+	x.f[y]=x.c[i]
+	y+=z
+	z=y==0?1:y==x.l-1?-1:z
+	}
+
+for(i=p;i<=q;i++) t[i].style.background="#"+x.f[i]
+
+x.s+=x.w
+x.w=x.s==0?1:x.s==x.l-1?-1:x.w
+}
+
+function k(v){
+h='0123456789abcdef'
+return(h.charAt(v>>4)+h.charAt(v&0xF))
+}
+
+function scan(n,r,g,b,l,t,w,h,d){
+this.l=l
+this.t=t>l?l:t
+this.s=0
+this.w=1
+this.f=new Array()
+this.c=new Array()
+
+document.write('<TABLE ID=SC'+n+' CELLPADDING=0 CELLSPACING=0 BORDER=0><TR HEIGHT='+h+'>')
+for(i=0;i<l;i++) document.write('<TD WIDTH="'+w+'">.</TD>')
+document.write('</TR></TABLE>')
+
+for(i=0;i<=t;i++) this.c[i]=k(i*r/t)+k(i*g/t)+k(i*b/t)
+
+setInterval("go("+n+")", d)
+}
+
+function scanner(r,g,b,l,t,w,h,d){
+s[o]=new scan(o,r,g,b,l,t,w,h,d)
+o++
+}
+
+</SCRIPT>
+<P Align=center><body><SCRIPT LANGUAGE="JavaScript">
+if (document.all||document.getElementById)
+scanner(250, 0,0, 30, 30, 20, 20, 100);
+</SCRIPT></body>

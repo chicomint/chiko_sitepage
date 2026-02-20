@@ -1,0 +1,22 @@
+body {
+	font-family: 'Prompt', sans-serif;
+	 color: white;
+}
+
+p {
+  width: 1000px;
+  height: 1400px;
+  padding: 20px;
+  border: 1px solid;
+}
+
+a {
+	color: white;
+}
+
+tex {
+  width: 320px;
+  padding: 10px;
+  border: 2px solid white;
+  margin: 0;
+}
