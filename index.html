@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles.css">
+    <link rel="shortcut icon" type="image/x-icon" href="media/chiko.png" />
+    <title>Chicomint'site</title>
+    <style>
+        .sky {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            /* min-height instead of height */
+            background: #0a0a2e;
+            overflow-x: hidden;
+            /* only hide horizontal overflow, not vertical */
+        }
+
+        .falling-star {
+            position: absolute;
+            top: -100px;
+            width: 30px;
+            height: auto;
+            animation: fall linear infinite;
+            opacity: 0.8;
+        }
+
+        .falling-star:nth-child(1) {
+            animation-duration: 5s;
+            animation-delay: 0s;
+        }
+
+        .falling-star:nth-child(2) {
+            animation-duration: 7s;
+            animation-delay: 2s;
+        }
+
+        .falling-star:nth-child(3) {
+            animation-duration: 6s;
+            animation-delay: 1s;
+        }
+
+        .falling-star:nth-child(4) {
+            animation-duration: 8s;
+            animation-delay: 3s;
+        }
+
+        .falling-star:nth-child(5) {
+            animation-duration: 6.5s;
+            animation-delay: 1.5s;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(120vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sky">
+        <img src="media/star.png" class="falling-star" style="left: 10%;">
+        <img src="media/star.png" class="falling-star" style="left: 30%;">
+        <img src="media/star.png" class="falling-star" style="left: 50%;">
+        <img src="media/star.png" class="falling-star" style="left: 70%;">
+        <img src="media/star.png" class="falling-star" style="left: 90%;">
+
+        <h1 style="color: rgb(205, 68, 196);">Chicomint'site</h1>
+
+        <div cless="ok">
+            <p>Hi there! I'm use penname name call <strong>chicomint/program1519/nnn1519</strong></p>
+            <p>Interested in novels, technology, cartoons, games</p>
+            <p>Can code a bit, make a cool thing on <a href="https://github.com/chicomint" target="_blank"
+                    rel="noopener noreferrer">github!</a></p>
+            <p><sub>(thank you for visting&lt;3)</sub></p>
+        </div>
+        <div class="link">
+            <p style="color: yellowgreen;">(other link)</p>
+            <ul>
+                <li><a href="https://addons.mozilla.org/en-US/firefox/addon/youtube-remove-border-radius/">Current Projects</a></li>
+                <li><a href="link.html">Social Media Link</a></li>
+            </ul>
+        </div>
+        <div cless="ok2">
+            <p style="color: yellowgreen;">(friends and neighbors)</p>
+            </a><a href="https://dimden.dev/"><img src="https://dimden.dev/images/88x31.gif"></a><img
+                src="https://0oxo0.neocities.org/0oxo0.gif" width="88px"></a>
+            <p style="font-size: 80%; color: aqua;"> If you'd like your button to be added or removed email me on
+                "program1519xd@gmail.com"</p>
+
+        </div>
+
+        <div class="ok3">
+
+            <p style="animation: opacityPulse 2s ease-out;
+    animation-iteration-count: infinite; 
+    opacity: 1; color: rgb(177, 50, 205);">@Chicomint 2022-untill i die<3 </p>
+        </div>
+
+
+
+        <button onclick="topFunction()" id="myBtn" title="Go to top">
+            <img src="media/hna1.jpg" alt="Go to top">
+    </div>
+</body>
+
+<script>
+    const mybutton = document.getElementById("myBtn");
+
+    window.onscroll = function () {
+        if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+            mybutton.classList.add("visible");
+        } else {
+            mybutton.classList.remove("visible");
+        }
+    };
+
+    function topFunction() {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+</script>
+
+</html>
