@@ -1,0 +1,365 @@
+@import url(https://tilomitra.github.io/infinite/infinite.css);
+
+        :root {
+            /* Images */
+            
+            /*Put your entire header background image CSS here */
+            --header-background: url(media/chikieee.png) center no-repeat;
+
+            /*Hamburger menu icons*/
+            --burgericon: url(/assets/burger.svg);
+            /* Path to burger vector */
+            --closeicon: url(/assets/close.svg);
+            /* Path to close vector */
+
+            /*Fonts*/
+            --body-font: Tahoma, sans-serif;
+            /* Body text font */
+            --header-font: Georgia, serif;
+            /* Font for headers */
+
+            /* Colors */
+            /* If you want a transparent background for any element, set the value to none */
+
+             background: #000033; 
+            --textcolor: #cccccc;
+
+            --mainbg: #111133;
+            --mainlink: #00ccff;
+            --mainlinkhover: #ff66ff;
+
+            /*Header text colors*/
+            --h1color: #ffffff;
+            --h2color: #00ccff;
+            --h3color: #cc99ff;
+            --h4color: #ff66cc;
+
+            --navbg: #000022;
+            /*Sidebar background color*/
+            --navheader: #ff00fb;
+            /*Sidebar header color*/
+            --navborder: #3333aa;
+            /*border under menu headers*/
+
+            --navlink: #99ccff;
+            /*Sidebar link color*/
+            --navlinkbg: none;
+            /*Sidebar link background*/
+            --navlinkhover: #ffffff;
+            /*Sidebar link hover color*/
+            --navlinkbghover: #330066;
+            --navcolor: #00ccff;
+            /*Color of hamburger menu icon*/
+
+            --formbg: #111144;
+            /*Form element background*/
+            --formtext: #99ccff;
+            /*Form element text color*/
+
+            --overlay: rgb(0, 0, 50, 0.8);
+            /*Overlay when hamburger menu is open*/
+
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--background);
+            color: var(--textcolor);
+            font: 1rem var(--body-font);
+        }
+
+        #container {
+            max-width: 800px;
+            padding: 10px;
+            margin: 25px auto;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        #main-header {
+            height: 150px;
+            flex: 1 0 100%;
+            background: var(--header-background);
+            background-size: cover;
+        }
+
+        main {
+            padding: 15px;
+            background: var(--mainbg);
+            flex: 1 1 calc(80% - 45px);
+        }
+
+        main a {
+            color: var(--mainlink);
+        }
+
+        main a:hover,
+        main a:focus {
+            color: var(--mainlinkhover);
+        }
+
+        main p {
+            margin: .5em 0px .5em 0px;
+            line-height: 1.5;
+        }
+
+        main h1 {
+            font: 2em var(--header-font);
+            color: var(--h1color);
+        }
+
+        main h2 {
+            font: 1.7em var(--header-font);
+            color: var(--h2color);
+        }
+
+        main h3 {
+            font: 1.4em var(--header-font);
+            color: var(--h3color);
+        }
+
+        main h4 {
+            font: 0.9em var(--header-font);
+            font-style: italic;
+        }
+
+        main img {
+            margin: 5px;
+            max-width: 90%;
+        }
+
+        main ul {
+            list-style: inside;
+        }
+
+        main ul li ul {
+            margin-left: 15px;
+        }
+
+        main input,
+        textarea,
+        select,
+        button {
+            background: var(--formbg);
+            color: var(--formtext);
+            border: 1px solid;
+            font: 1em var(--body-font);
+            padding: 5px;
+            margin: 5px;
+        }
+
+        #sidebar {
+            flex: 1 1 20%;
+        }
+
+        .item {
+            padding: 15px;
+            background: var(--navbg);
+            margin-bottom: 15px;
+        }
+
+        .menu h2 {
+            font: 1.2rem var(--header-font);
+            border-bottom: 1px solid var(--navborder);
+            color: var(--navheader);
+        }
+
+        .menu ul {
+            list-style: none;
+            display: inline;
+            margin: 0;
+        }
+
+        .menu ul li {
+            display: block;
+        }
+
+        .menu a {
+            display: block;
+            text-decoration: none;
+            padding: 5px;
+            color: var(--navlink);
+            background: var(--navlinkbg);
+        }
+
+        .menu a:hover,
+        .menu a:focus {
+            color: var(--navlinkhover);
+            background: var(--navlinkbghover);
+        }
+
+        footer {
+            background: var(--mainbg);
+            padding: 15px;
+            text-align: center;
+            flex: 1 0 calc(100% - 30px);
+        }
+
+        /* Burger menu styles */
+
+        #burger {
+            display: none;
+            width: 100%;
+            position: fixed;
+            top: 0;
+        }
+
+        #burger summary {
+            list-style-type: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            color: var(--background);
+            padding: 5px;
+            background: var(--background);
+        }
+
+        #burger summary::before,
+        #burger[open]>summary::before {
+            height: 40px;
+            width: 40px;
+            background: var(--navcolor);
+        }
+
+        #burger summary::-webkit-details-marker {
+            display: none;
+        }
+
+        #burger summary::before {
+            content: '';
+            mask-image: var(--burgericon);
+            -webkit-mask-image: var(--burgericon);
+            mask-size: 40px;
+            -webkit-mask-size: 40px;
+        }
+
+        #burger[open]>summary::before {
+            content: '';
+            mask-image: var(--closeicon);
+            -webkit-mask-image: var(--closeicon);
+            mask-size: 40px;
+            -webkit-mask-size: 40px;
+        }
+
+        #burger[open] {
+            position: fixed;
+            background: var(--overlay);
+        }
+
+        .skip a {
+            position: absolute;
+            left: -10000px;
+            top: auto;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+        }
+
+        .skip a:focus {
+            position: static;
+            width: auto;
+            height: auto;
+        }
+
+        #burger-menu {
+            height: 100vh;
+            overflow: auto;
+            z-index: 1000;
+            background: var(--navbg);
+            width: 200px;
+        }
+
+        #burger-menu .item {
+            margin: 0;
+            padding: 10px;
+        }
+
+        /* Skip to content button */
+        #skip a {
+            position: absolute;
+            display: inline-block;
+            left: 0px;
+            top: -1000px;
+            overflow: hidden;
+            transition: top 0.5s ease;
+            background: var(--mainbg);
+            color: var(--mainlink);
+            z-index: 1001;
+            padding: 5px;
+        }
+
+        #skip a:focus {
+            top: 0;
+            transition: top 0.5s ease;
+        }
+
+        @media screen and (max-width:600px) {
+
+            main {
+                flex-basis: 100%;
+            }
+
+            #sidebar {
+                display: none;
+            }
+
+            #burger {
+                display: block;
+            }
+
+            footer {
+                margin-top: 0px;
+            }
+
+        }
+
+         .falling-star {
+            position: absolute;
+            top: -100px;
+            width: 30px;
+            height: auto;
+            animation: fall linear infinite;
+            opacity: 0.8;
+        }
+
+        .falling-star:nth-child(1) {
+            animation-duration: 5s;
+            animation-delay: 0s;
+        }
+
+        .falling-star:nth-child(2) {
+            animation-duration: 7s;
+            animation-delay: 2s;
+        }
+
+        .falling-star:nth-child(3) {
+            animation-duration: 6s;
+            animation-delay: 1s;
+        }
+
+        .falling-star:nth-child(4) {
+            animation-duration: 8s;
+            animation-delay: 3s;
+        }
+
+        .falling-star:nth-child(5) {
+            animation-duration: 6.5s;
+            animation-delay: 1.5s;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(120vh) rotate(360deg);
+                opacity: 0;
+            }
+        }

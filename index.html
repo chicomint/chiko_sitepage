@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+     <title>chicomint'site</title>
+     <link rel="shortcut icon" type="image/x-icon" href="media/chiki.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="style.css">
+
+    <script>
+        window.onload = function () {
+            let burger = document.getElementById("burger");
+
+            burger.addEventListener("keydown", (event) => {
+                let key = event.code;
+                if (key == "Escape") {
+                    burger.removeAttribute("open");
+                }
+            });
+        };
+    </script>
+</head>
+
+<body>
+     <div class="sky">
+        <img src="media/star.png" class="falling-star" style="left: 10%;">
+        <img src="media/star.png" class="falling-star" style="left: 30%;">
+        <img src="media/star.png" class="falling-star" style="left: 50%;">
+        <img src="media/star.png" class="falling-star" style="left: 70%;">
+        <img src="media/star.png" class="falling-star" style="left: 90%;">
+    <!-- SKIP TO CONTENT BUTTON, DO NOT DELETE -->
+    <div id="skip"> <a href="#content">Skip to content</a> </div>
+
+    <!-- START HAMBURGER MENU -->
+    <details id="burger">
+        <summary id="toggle">Menu</summary>
+        <nav id="burger-menu" class="menu">
+            <!-- Make sure everything in here matches with the contents of the sidebar -->
+             <div class="item">
+                <h2>Menu</h2>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="project.html">Project</a></li>
+                    <li><a href="link.html">Link</a></li>
+                </ul>
+            </div>
+
+            <div class="item">
+                <h2>(friends and neighbors)</h2>
+                <ul>
+                    <li><a href="https://dimden.dev/"><img src="https://dimden.dev/images/88x31.gif"></a></li>
+                    <li><img src="https://0oxo0.neocities.org/0oxo0.gif" width="88px"></li>
+                    <li><a href="https://luvstarkei.com/"><img
+                                src="https://i0.wp.com/luvstarkei.com/wp-content/uploads/2024/11/LuvstarKeiButton-1.png?resize=88%2C31&amp;ssl=1"
+                                width="88" height="31"></a></li>
+                </ul>
+            </div>
+
+
+            <!-- Don't delete this -->
+            <ul>
+                <li class="skip"><a href="#toggle">Close menu</a></li>
+            </ul>
+        </nav>
+    </details>
+    <!-- END HAMBURGER MENU -->
+
+    <div id="container">
+
+        <header id="main-header"></header>
+
+        <!-- BEGIN SIDEBAR -->
+        <nav id="sidebar" class="menu">
+            <!-- Make sure everything in here matches the contents of the hamburger menu -->
+            <div class="item">
+                <h2>Menu</h2>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="project.html">Project</a></li>
+                    <li><a href="link.html">Link</a></li>
+                </ul>
+            </div>
+
+            <div class="item">
+                <h2>(friends and neighbors)</h2>
+                <ul>
+                    <li><a href="https://dimden.dev/"><img src="https://dimden.dev/images/88x31.gif"></a></li>
+                    <li><img src="https://0oxo0.neocities.org/0oxo0.gif" width="88px"></li>
+                    <li><a href="https://luvstarkei.com/"><img
+                                src="https://i0.wp.com/luvstarkei.com/wp-content/uploads/2024/11/LuvstarKeiButton-1.png?resize=88%2C31&amp;ssl=1"
+                                width="88" height="31"></a></li>
+                </ul>
+            </div>
+
+
+        </nav>
+        <!-- END SIDEBAR -->
+
+        <!-- BEGIN CONTENT -->
+
+        <main id="content">
+            <h1>Chicomint'site</h1>
+            <p>Hi there! I'm use penname name call chicomint/program1519/nnn1519
+
+                Interested in novels, technology, cartoons, games
+
+                Can code a bit, make a cool thing on<a href="https://github.com/chicomint" target="_blank"
+                    rel="noopener noreferrer"> github!</a></p>
+            <p>(thank you for visting&lt;3)</p>
+
+                <p>(If you'd like your site button to be added or removed email me on
+                            "chicomint@proton.me")</p>
+        </main>
+        <!-- END CONTENT -->
+
+        <!-- BEGIN FOOTER -->
+        <footer>
+            <p style="animation: opacityPulse 2s ease-out;
+    animation-iteration-count: infinite; 
+    opacity: 1; color: rgb(177, 50, 205);">@Chicomint 2022-untill i die&lt;3 </p>
+        </footer>
+        <!-- END FOOTER -->
+    </div>
+</body>
+
+</html>
