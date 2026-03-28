@@ -1,0 +1,307 @@
+@import url(https://tilomitra.github.io/infinite/infinite.css);
+
+:root {
+    --header-background: url(media/chicken.png) center no-repeat;
+
+    --burgericon: url(/assets/burger.svg);
+    --closeicon: url(/assets/close.svg);
+
+    --body-font: Tahoma, sans-serif;
+    --header-font: Georgia, serif;
+
+    /* Updated Tones */
+    --background-color: #1a1a2e; 
+    --body-wallpaper: url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?auto=format&fit=crop&w=1920&q=80');
+    --textcolor: #d1d1e0;
+
+    --mainbg: rgba(22, 22, 45, 0.95);
+    --mainlink: #4dabff;
+    --mainlinkhover: #ff80bf;
+
+    --h1color: #ffffff;
+    --h2color: #4dabff;
+    --h3color: #b388ff;
+    --h4color: #ff85c0;
+
+    --navbg: #101028;
+    --navheader: #f06292;
+    --navborder: #3f3f7a;
+
+    --navlink: #a3c2ff;
+    --navlinkbg: none;
+    --navlinkhover: #ffffff;
+    --navlinkbghover: #2d1b4d;
+    --navcolor: #4dabff;
+
+    --formbg: #16163a;
+    --formtext: #a3c2ff;
+
+    --overlay: rgba(10, 10, 30, 0.85);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: var(--background-color);
+    background-image: var(--body-wallpaper);
+    background-attachment: fixed;
+    background-size: cover;
+    color: var(--textcolor);
+    font: 1rem var(--body-font);
+}
+
+#container {
+    max-width: 1200px;
+    padding: 20px;
+    margin: 25px auto;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    background: rgba(26, 26, 46, 0.7);
+    backdrop-filter: blur(5px);
+}
+
+#main-header {
+    height: 220px;
+    flex: 1 0 100%;
+    background: var(--header-background);
+    background-size: cover;
+    border-radius: 8px 8px 0 0;
+}
+
+main {
+    padding: 25px;
+    background: var(--mainbg);
+    flex: 1 1 calc(75% - 45px);
+    font-size: 1.1rem;
+    border-radius: 4px;
+}
+
+main a {
+    color: var(--mainlink);
+}
+
+main a:hover,
+main a:focus {
+    color: var(--mainlinkhover);
+}
+
+main p {
+    margin: .5em 0px .5em 0px;
+    line-height: 1.7;
+}
+
+main h1 {
+    font: 2.5em var(--header-font);
+    color: var(--h1color);
+}
+
+main h2 {
+    font: 2em var(--header-font);
+    color: var(--h2color);
+}
+
+main h3 {
+    font: 1.7em var(--header-font);
+    color: var(--h3color);
+}
+
+main h4 {
+    font: 0.9em var(--header-font);
+    font-style: italic;
+    color: var(--h4color);
+}
+
+main img {
+    margin: 5px;
+    max-width: 90%;
+    border-radius: 4px;
+}
+
+main ul {
+    list-style: inside;
+}
+
+main ul li ul {
+    margin-left: 15px;
+}
+
+main input,
+textarea,
+select,
+button {
+    background: var(--formbg);
+    color: var(--formtext);
+    border: 1px solid var(--navborder);
+    font: 1em var(--body-font);
+    padding: 5px;
+    margin: 5px;
+    border-radius: 3px;
+}
+
+#sidebar {
+    flex: 1 1 250px;
+    min-width: 200px;
+    max-width: 280px;
+}
+
+#sidebar img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 4px 0;
+    border-radius: 4px;
+}
+
+.item {
+    padding: 20px;
+    background: var(--navbg);
+    margin-bottom: 20px;
+    border-radius: 4px;
+}
+
+.menu h2 {
+    font: 1.2rem var(--header-font);
+    border-bottom: 1px solid var(--navborder);
+    color: var(--navheader);
+    margin-bottom: 10px;
+}
+
+.menu ul {
+    list-style: none;
+    display: inline;
+    margin: 0;
+}
+
+.menu ul li {
+    display: block;
+}
+
+.menu a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    padding: 8px 5px;
+    color: var(--navlink);
+    background: var(--navlinkbg);
+    transition: all 0.2s ease;
+}
+
+.menu a:hover,
+.menu a:focus {
+    color: var(--navlinkhover);
+    background: var(--navlinkbghover);
+    padding-left: 10px;
+}
+
+footer {
+    background: var(--mainbg);
+    padding: 20px;
+    text-align: center;
+    flex: 1 0 calc(100% - 40px);
+    border-radius: 0 0 8px 8px;
+}
+
+#burger {
+    display: none;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    z-index: 2000;
+}
+
+#burger summary {
+    list-style-type: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    color: var(--navcolor);
+    padding: 5px;
+    background: var(--navbg);
+}
+
+#burger summary::before {
+    content: '';
+    mask-image: var(--burgericon);
+    -webkit-mask-image: var(--burgericon);
+    mask-size: 40px;
+    -webkit-mask-size: 40px;
+    height: 40px;
+    width: 40px;
+    background: var(--navcolor);
+}
+
+#burger[open]>summary::before {
+    mask-image: var(--closeicon);
+    -webkit-mask-image: var(--closeicon);
+}
+
+#burger[open] {
+    position: fixed;
+    background: var(--overlay);
+}
+
+#burger-menu {
+    height: 100vh;
+    overflow: auto;
+    z-index: 1000;
+    background: var(--navbg);
+    width: 250px;
+}
+
+#skip a {
+    position: absolute;
+    display: inline-block;
+    left: 0px;
+    top: -1000px;
+    overflow: hidden;
+    transition: top 0.5s ease;
+    background: var(--mainbg);
+    color: var(--mainlink);
+    z-index: 1001;
+    padding: 5px;
+}
+
+#skip a:focus {
+    top: 0;
+}
+
+@media screen and (max-width:600px) {
+    main {
+        flex-basis: 100%;
+    }
+    #sidebar {
+        display: none;
+    }
+    #burger {
+        display: block;
+    }
+    footer {
+        margin-top: 0px;
+    }
+}
+
+.falling-star {
+    position: absolute;
+    top: -100px;
+    width: 30px;
+    height: auto;
+    animation: fall linear infinite;
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+@keyframes fall {
+    0% { transform: translateY(0) rotate(0deg); opacity: 0.8; }
+    100% { transform: translateY(120vh) rotate(360deg); opacity: 0; }
+}
+
+.menu-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    object-fit: contain;
+}

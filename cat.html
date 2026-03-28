@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>chicomint'site - Random Cat</title>
+    <link rel="shortcut icon" type="image/x-icon" href="media/chiki.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="style.css?v=0.2">
+
+    <script>
+        window.onload = function () {
+            let burger = document.getElementById("burger");
+            burger.addEventListener("keydown", (event) => {
+                if (event.code == "Escape") burger.removeAttribute("open");
+            });
+            loadCats(4);
+        };
+
+        function loadCats(n) {
+            const grid = document.getElementById("cat-grid");
+            grid.innerHTML = "";
+            const total = Math.min(Math.max(parseInt(n) || 1, 1), 12);
+            for (let i = 0; i < total; i++) {
+                const img = document.createElement("img");
+                img.src = "https://cataas.com/cat?rand=" + Date.now() + i + Math.random();
+                img.alt = "Random Cat #" + (i + 1);
+                img.style.width = "200px";
+                img.style.height = "200px";
+                img.style.objectFit = "cover";
+
+                grid.appendChild(img);
+            }
+        }
+
+        function onRandomize() {
+            loadCats(document.getElementById("cat-count").value);
+        }
+    </script>
+</head>
+
+<body>
+    <div class="sky">
+        <img src="media/star.png" class="falling-star" style="left: 10%;">
+        <img src="media/star.png" class="falling-star" style="left: 30%;">
+        <img src="media/star.png" class="falling-star" style="left: 50%;">
+        <img src="media/star.png" class="falling-star" style="left: 70%;">
+        <img src="media/star.png" class="falling-star" style="left: 90%;">
+
+    <div id="skip"><a href="#content">Skip to content</a></div>
+
+    <details id="burger">
+        <summary id="toggle">Menu</summary>
+        <nav id="burger-menu" class="menu">
+            <div class="item">
+                <h2>Menu</h2>
+                <ul>
+                  <li><a href="index.html"> <img src="media/icon/home.png" class="menu-icon"> Home</a></li>
+						<li><a href="project.html"><img src="media/icon/project.png" class="menu-icon"> Project</a></li>
+						<li><a href="cat.html"><img src="media/icon/cat.png" class="menu-icon"> Random cat!</a></li>
+                          <li><a href="credits.html"><img src="media/icon/cc.png" class="menu-icon"> credits</a></li>
+                    </ul>
+            </div>
+            <div class="item">
+                <h2>(friends and neighbors)</h2>
+                <ul>
+                                  <li><a href="https://dimden.dev/"><img src="https://dimden.dev/images/88x31.gif" width="88" height="31"></a></li>
+              <li><a href="https://0oxo0.neocities.org/"><img src="https://0oxo0.neocities.org/0oxo0.gif" width="88" height="31" ></a></li>
+               <li><a href="https://luvstarkei.com/"><img src="https://i0.wp.com/luvstarkei.com/wp-content/uploads/2024/11/LuvstarKeiButton-1.png?resize=88%2C31&amp;ssl=1" width="88" height="31"></a></li>
+              <li><a href="https://wafflechuu.nekoweb.org/"><img src="https://wafflechuu.nekoweb.org/button.gif" width="88" height="31"></a></li>
+                </ul>
+            </div>
+            <ul>
+                <li class="skip"><a href="#toggle">Close menu</a></li>
+            </ul>
+        </nav>
+    </details>
+
+    <div id="container">
+
+        <header id="main-header"></header>
+
+        <nav id="sidebar" class="menu">
+            <div class="item">
+                <h2>Menu</h2>
+                <ul>
+                    <li><a href="index.html"> <img src="media/icon/home.png" class="menu-icon"> Home</a></li>
+						<li><a href="project.html"><img src="media/icon/project.png" class="menu-icon"> Project</a></li>
+						<li><a href="cat.html"><img src="media/icon/cat.png" class="menu-icon"> Random cat!</a></li>
+                          <li><a href="credits.html"><img src="media/icon/cc.png" class="menu-icon"> credits</a></li>
+                    </ul>
+            </div>
+            <div class="item">
+                <h2>(friends and neighbors)</h2>
+                <ul>
+                                   <li><a href="https://dimden.dev/"><img src="https://dimden.dev/images/88x31.gif" width="88" height="31"></a></li>
+              <li><a href="https://0oxo0.neocities.org/"><img src="https://0oxo0.neocities.org/0oxo0.gif" width="88" height="31" ></a></li>
+               <li><a href="https://luvstarkei.com/"><img src="https://i0.wp.com/luvstarkei.com/wp-content/uploads/2024/11/LuvstarKeiButton-1.png?resize=88%2C31&amp;ssl=1" width="88" height="31"></a></li>
+              <li><a href="https://wafflechuu.nekoweb.org/"><img src="https://wafflechuu.nekoweb.org/button.gif" width="88" height="31"></a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <main id="content">
+            <h1>Random Cat!</h1><hr>
+
+            <p>
+                How many pic do u want(1-12):
+                <input type="number" id="cat-count" value="4" min="1" max="12" style="width:50px;">
+                <button onclick="onRandomize()">Random it!</button>
+            </p>
+
+            <div id="cat-grid" style="display:flex; flex-wrap:wrap; gap:10px; margin-top:10px;"></div>
+        </main>
+
+        <footer>
+            <p style="animation: opacityPulse 2s ease-out; animation-iteration-count: infinite; opacity: 1; color: rgb(177, 50, 205);">@Chicomint 2022-untill i die&lt;3</p>
+        </footer>
+
+    </div>
+</body>
+
+</html>
