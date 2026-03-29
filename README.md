@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>chicomint'site</title>
+    <link rel="shortcut icon" type="image/x-icon" href="media/chiki.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="style.css?v=1.0">
+    <link rel="stylesheet" href="sakura.css" media="screen" />
+    <link rel="stylesheet" href="sakura-dark.css" media="screen and (prefers-color-scheme: dark)" />
+</head>
+
+<body>
+    <div class="sky">
+    <img src="media/star.png" class="falling-star" style="left: 10%;">
+    <img src="media/star.png" class="falling-star" style="left: 30%;">
+    <img src="media/star.png" class="falling-star" style="left: 50%;">
+    <img src="media/star.png" class="falling-star" style="left: 70%;">
+    <img src="media/star.png" class="falling-star" style="left: 90%;">
+    </div>
+
+    <h1>Chicomint~!</h1>
+    <a href="index.html" style="color: greenyellow;">Homepage</a>/<a href="project.html">project</a>/<a
+        href="credits.html">credits</a>/<a href="cat.html">Cat_Rng. ;3</a>
+    <hr>
+    <p>Hi there! I'm use penname name call chicomint
+
+        Interested in novels, technology, cartoons, games
+
+        Can code a bit, make a cool thing on<a href="https://github.com/chicomint" target="_blank"
+            rel="noopener noreferrer"> github!</a></p>
+    <p>(thank you for visting&lt;3)</p>
+     <img src="media/e43.gif" ><br>
+      <img src="media/e50.gif" ><br>
+       
+    <img src="media/e116.gif" >
+
+    <div class="mikumikumiuku">
+        <br>
+        <a href="https://dimden.dev/"><img src="https://dimden.dev/images/88x31.gif" width="88" height="31"></a></li>
+        <a href="https://0oxo0.neocities.org/"><img src="https://0oxo0.neocities.org/0oxo0.gif" width="88"
+                height="31"></a></li>
+        <a href="https://luvstarkei.com/"><img
+                src="https://i0.wp.com/luvstarkei.com/wp-content/uploads/2024/11/LuvstarKeiButton-1.png?resize=88%2C31&amp;ssl=1"
+                width="88" height="31"></a></li>
+        <a href="https://wafflechuu.nekoweb.org/"><img src="https://wafflechuu.nekoweb.org/button.gif" width="88"
+                height="31"></a></li>
+
+    </div>
+</body>
+
+<footer>
+    <hr>
+    <p style="animation: opacityPulse 2s ease-out;
+    animation-iteration-count: infinite; 
+    opacity: 1; color: rgb(117, 205, 50);">@Chicomint 2022-untill i die&lt;3 </p>
+</footer>
+
+</html>
