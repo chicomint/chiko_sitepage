@@ -1,307 +1,287 @@
 @import url(https://tilomitra.github.io/infinite/infinite.css);
 
-:root {
-    --header-background: url(media/chicken.png) center no-repeat;
-
-    --burgericon: url(/assets/burger.svg);
-    --closeicon: url(/assets/close.svg);
-
-    --body-font: Tahoma, sans-serif;
-    --header-font: Georgia, serif;
-
-    /* Updated Tones */
-    --background-color: #1a1a2e; 
-    --body-wallpaper: url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?auto=format&fit=crop&w=1920&q=80');
-    --textcolor: #d1d1e0;
-
-    --mainbg: rgba(22, 22, 45, 0.95);
-    --mainlink: #4dabff;
-    --mainlinkhover: #ff80bf;
-
-    --h1color: #ffffff;
-    --h2color: #4dabff;
-    --h3color: #b388ff;
-    --h4color: #ff85c0;
-
-    --navbg: #101028;
-    --navheader: #f06292;
-    --navborder: #3f3f7a;
-
-    --navlink: #a3c2ff;
-    --navlinkbg: none;
-    --navlinkhover: #ffffff;
-    --navlinkbghover: #2d1b4d;
-    --navcolor: #4dabff;
-
-    --formbg: #16163a;
-    --formtext: #a3c2ff;
-
-    --overlay: rgba(10, 10, 30, 0.85);
-}
-
-* {
-    margin: 0;
-    padding: 0;
+/* Sakura.css v1.5.1
+ * ================
+ * Minimal css theme.
+ * Project: https://github.com/oxalorg/sakura/
+ */
+/* Body */
+html {
+  font-size: 62.5%;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
 }
 
 body {
-    background: var(--background-color);
-    background-image: var(--body-wallpaper);
-    background-attachment: fixed;
-    background-size: cover;
-    color: var(--textcolor);
-    font: 1rem var(--body-font);
+  font-size: 1.8rem;
+  line-height: 1.618;
+  max-width: 38em;
+  margin: auto;
+  color: #4a4a4a;
+  background-color: #f9f9f9;
+  padding: 13px;
 }
 
-#container {
-    max-width: 1200px;
-    padding: 20px;
-    margin: 25px auto;
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-    background: rgba(26, 26, 46, 0.7);
-    backdrop-filter: blur(5px);
+@media (max-width: 684px) {
+  body {
+    font-size: 1.53rem;
+  }
+}
+@media (max-width: 382px) {
+  body {
+    font-size: 1.35rem;
+  }
+}
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.1;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  font-weight: 700;
+  margin-top: 3rem;
+  margin-bottom: 1.5rem;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  -ms-word-break: break-all;
+  word-break: break-word;
 }
 
-#main-header {
-    height: 220px;
-    flex: 1 0 100%;
-    background: var(--header-background);
-    background-size: cover;
-    border-radius: 8px 8px 0 0;
+h1 {
+  font-size: 2.35em;
 }
 
-main {
-    padding: 25px;
-    background: var(--mainbg);
-    flex: 1 1 calc(75% - 45px);
-    font-size: 1.1rem;
-    border-radius: 4px;
+h2 {
+  font-size: 2em;
 }
 
-main a {
-    color: var(--mainlink);
+h3 {
+  font-size: 1.75em;
 }
 
-main a:hover,
-main a:focus {
-    color: var(--mainlinkhover);
+h4 {
+  font-size: 1.5em;
 }
 
-main p {
-    margin: .5em 0px .5em 0px;
-    line-height: 1.7;
+h5 {
+  font-size: 1.25em;
 }
 
-main h1 {
-    font: 2.5em var(--header-font);
-    color: var(--h1color);
+h6 {
+  font-size: 1em;
 }
 
-main h2 {
-    font: 2em var(--header-font);
-    color: var(--h2color);
+p {
+  margin-top: 0px;
+  margin-bottom: 2.5rem;
 }
 
-main h3 {
-    font: 1.7em var(--header-font);
-    color: var(--h3color);
+small, sub, sup {
+  font-size: 75%;
 }
 
-main h4 {
-    font: 0.9em var(--header-font);
-    font-style: italic;
-    color: var(--h4color);
+hr {
+  border-color: #1d7484;
 }
 
-main img {
-    margin: 5px;
-    max-width: 90%;
-    border-radius: 4px;
+a {
+  text-decoration: none;
+  color: #1d7484;
+}
+a:visited {
+  color: #144f5a;
+}
+a:hover {
+  color: #982c61;
+  border-bottom: 2px solid #4a4a4a;
 }
 
-main ul {
-    list-style: inside;
+ul {
+  padding-left: 1.4em;
+  margin-top: 0px;
+  margin-bottom: 2.5rem;
 }
 
-main ul li ul {
-    margin-left: 15px;
+li {
+  margin-bottom: 0.4em;
 }
 
-main input,
-textarea,
-select,
-button {
-    background: var(--formbg);
-    color: var(--formtext);
-    border: 1px solid var(--navborder);
-    font: 1em var(--body-font);
-    padding: 5px;
-    margin: 5px;
-    border-radius: 3px;
+blockquote {
+  margin-left: 0px;
+  margin-right: 0px;
+  padding-left: 1em;
+  padding-top: 0.8em;
+  padding-bottom: 0.8em;
+  padding-right: 0.8em;
+  border-left: 5px solid #1d7484;
+  margin-bottom: 2.5rem;
+  background-color: #f1f1f1;
 }
 
-#sidebar {
-    flex: 1 1 250px;
-    min-width: 200px;
-    max-width: 280px;
+blockquote p {
+  margin-bottom: 0;
 }
 
-#sidebar img {
-    max-width: 100%;
-    height: auto;
-    display: block;
-    margin: 4px 0;
-    border-radius: 4px;
+img, video {
+  height: auto;
+  max-width: 100%;
+  margin-top: 0px;
+  margin-bottom: 2.5rem;
 }
 
-.item {
-    padding: 20px;
-    background: var(--navbg);
-    margin-bottom: 20px;
-    border-radius: 4px;
+/* Pre and Code */
+pre {
+  background-color: #f1f1f1;
+  display: block;
+  padding: 1em;
+  overflow-x: auto;
+  margin-top: 0px;
+  margin-bottom: 2.5rem;
+  font-size: 0.9em;
 }
 
-.menu h2 {
-    font: 1.2rem var(--header-font);
-    border-bottom: 1px solid var(--navborder);
-    color: var(--navheader);
-    margin-bottom: 10px;
+code, kbd, samp {
+  font-size: 0.9em;
+  padding: 0 0.5em;
+  background-color: #f1f1f1;
+  white-space: pre-wrap;
 }
 
-.menu ul {
-    list-style: none;
-    display: inline;
-    margin: 0;
+pre > code {
+  padding: 0;
+  background-color: transparent;
+  white-space: pre;
+  font-size: 1em;
 }
 
-.menu ul li {
-    display: block;
+/* Tables */
+table {
+  text-align: justify;
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 2rem;
 }
 
-.menu a {
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-    padding: 8px 5px;
-    color: var(--navlink);
-    background: var(--navlinkbg);
-    transition: all 0.2s ease;
+td, th {
+  padding: 0.5em;
+  border-bottom: 1px solid #f1f1f1;
 }
 
-.menu a:hover,
-.menu a:focus {
-    color: var(--navlinkhover);
-    background: var(--navlinkbghover);
-    padding-left: 10px;
+/* Buttons, forms and input */
+input, textarea {
+  border: 1px solid #4a4a4a;
+}
+input:focus, textarea:focus {
+  border: 1px solid #1d7484;
 }
 
-footer {
-    background: var(--mainbg);
-    padding: 20px;
-    text-align: center;
-    flex: 1 0 calc(100% - 40px);
-    border-radius: 0 0 8px 8px;
+textarea {
+  width: 100%;
 }
 
-#burger {
-    display: none;
-    width: 100%;
-    position: fixed;
-    top: 0;
-    z-index: 2000;
+.button, button,
+input[type=submit],
+input[type=reset],
+input[type=button],
+input[type=file]::file-selector-button {
+  display: inline-block;
+  padding: 5px 10px;
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  background-color: #1d7484;
+  color: #f9f9f9;
+  border-radius: 1px;
+  border: 1px solid #1d7484;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+.button:hover, button:hover,
+input[type=submit]:hover,
+input[type=reset]:hover,
+input[type=button]:hover,
+input[type=file]::file-selector-button:hover {
+  background-color: #982c61;
+  color: #f9f9f9;
+  outline: 0;
 }
 
-#burger summary {
-    list-style-type: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    color: var(--navcolor);
-    padding: 5px;
-    background: var(--navbg);
+.button[disabled], button[disabled],
+input[type=submit][disabled],
+input[type=reset][disabled],
+input[type=button][disabled],
+input[type=file][disabled] {
+  cursor: default;
+  opacity: 0.5;
+}
+.button:focus-visible, button:focus-visible,
+input[type=submit]:focus-visible,
+input[type=reset]:focus-visible,
+input[type=button]:focus-visible,
+input[type=file]:focus-visible {
+  outline-style: solid;
+  outline-width: 2px;
 }
 
-#burger summary::before {
-    content: '';
-    mask-image: var(--burgericon);
-    -webkit-mask-image: var(--burgericon);
-    mask-size: 40px;
-    -webkit-mask-size: 40px;
-    height: 40px;
-    width: 40px;
-    background: var(--navcolor);
+textarea, select, input {
+  color: #4a4a4a;
+  padding: 6px 10px; 
+  margin-bottom: 10px;
+  background-color: #f1f1f1;
+  border: 1px solid #f1f1f1;
+  border-radius: 4px;
+  box-shadow: none;
+  box-sizing: border-box;
+}
+textarea:focus, select:focus, input:focus {
+  border: 1px solid #1d7484;
+  outline: 0;
 }
 
-#burger[open]>summary::before {
-    mask-image: var(--closeicon);
-    -webkit-mask-image: var(--closeicon);
+input[type=checkbox]:focus {
+  outline: 1px dotted #1d7484;
 }
 
-#burger[open] {
-    position: fixed;
-    background: var(--overlay);
+label, legend, fieldset {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
 }
 
-#burger-menu {
-    height: 100vh;
-    overflow: auto;
-    z-index: 1000;
-    background: var(--navbg);
-    width: 250px;
-}
-
-#skip a {
-    position: absolute;
-    display: inline-block;
-    left: 0px;
-    top: -1000px;
-    overflow: hidden;
-    transition: top 0.5s ease;
-    background: var(--mainbg);
-    color: var(--mainlink);
-    z-index: 1001;
-    padding: 5px;
-}
-
-#skip a:focus {
-    top: 0;
-}
-
-@media screen and (max-width:600px) {
-    main {
-        flex-basis: 100%;
-    }
-    #sidebar {
-        display: none;
-    }
-    #burger {
-        display: block;
-    }
-    footer {
-        margin-top: 0px;
-    }
-}
 
 .falling-star {
-    position: absolute;
-    top: -100px;
-    width: 30px;
-    height: auto;
-    animation: fall linear infinite;
-    opacity: 0.6;
-    pointer-events: none;
+  position: absolute;
+  top: -100px;
+  width: 30px;
+  height: auto;
+  animation: fall linear infinite;
+  opacity: 0.8;
+}
+
+.falling-star:nth-child(1) {
+  animation-duration: 5s;
+  animation-delay: 0s;
+}
+.falling-star:nth-child(2) {
+  animation-duration: 7s;
+  animation-delay: 2s;
+}
+.falling-star:nth-child(3) {
+  animation-duration: 6s;
+  animation-delay: 1s;
+}
+.falling-star:nth-child(4) {
+  animation-duration: 8s;
+  animation-delay: 3s;
+}
+.falling-star:nth-child(5) {
+  animation-duration: 6.5s;
+  animation-delay: 1.5s;
 }
 
 @keyframes fall {
-    0% { transform: translateY(0) rotate(0deg); opacity: 0.8; }
-    100% { transform: translateY(120vh) rotate(360deg); opacity: 0; }
-}
-
-.menu-icon {
-    width: 20px;
-    height: 20px;
-    margin-right: 10px;
-    object-fit: contain;
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(120vh) rotate(360deg);
+    opacity: 0;
+  }
 }
