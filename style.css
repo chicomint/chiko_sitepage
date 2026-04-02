@@ -285,3 +285,13 @@ label, legend, fieldset {
     opacity: 0;
   }
 }
+
+user {
+  color: rgb(46, 0, 249);
+
+}
+.story-container {
+    white-space: pre;
+    line-height: 1.2;
+    color: #444;
+  }
