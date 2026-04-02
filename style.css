@@ -285,3 +285,8 @@ label, legend, fieldset {
     opacity: 0;
   }
 }
+
+user {
+  color: rgb(46, 0, 249);
+
+}
