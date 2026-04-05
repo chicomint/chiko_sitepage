@@ -1,3 +1,2 @@
    <h1>Chicomint~! Site</h1>
-     <img src="media/e43.gif" ><br>
-
+<img src="https://files.catbox.moe/al2x43.png">
