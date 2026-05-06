@@ -26,12 +26,19 @@ body {
     font-size: 1.53rem;
   }
 }
+
 @media (max-width: 382px) {
   body {
     font-size: 1.35rem;
   }
 }
-h1, h2, h3, h4, h5, h6 {
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   line-height: 1.1;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
   font-weight: 700;
@@ -72,7 +79,9 @@ p {
   margin-bottom: 2.5rem;
 }
 
-small, sub, sup {
+small,
+sub,
+sup {
   font-size: 75%;
 }
 
@@ -84,9 +93,11 @@ a {
   text-decoration: none;
   color: #1d7484;
 }
+
 a:visited {
   color: #144f5a;
 }
+
 a:hover {
   color: #982c61;
   border-bottom: 2px solid #4a4a4a;
@@ -118,7 +129,8 @@ blockquote p {
   margin-bottom: 0;
 }
 
-img, video {
+img,
+video {
   height: auto;
   max-width: 100%;
   margin-top: 0px;
@@ -136,14 +148,16 @@ pre {
   font-size: 0.9em;
 }
 
-code, kbd, samp {
+code,
+kbd,
+samp {
   font-size: 0.9em;
   padding: 0 0.5em;
   background-color: #f1f1f1;
   white-space: pre-wrap;
 }
 
-pre > code {
+pre>code {
   padding: 0;
   background-color: transparent;
   white-space: pre;
@@ -158,16 +172,20 @@ table {
   margin-bottom: 2rem;
 }
 
-td, th {
+td,
+th {
   padding: 0.5em;
   border-bottom: 1px solid #f1f1f1;
 }
 
 /* Buttons, forms and input */
-input, textarea {
+input,
+textarea {
   border: 1px solid #4a4a4a;
 }
-input:focus, textarea:focus {
+
+input:focus,
+textarea:focus {
   border: 1px solid #1d7484;
 }
 
@@ -175,7 +193,8 @@ textarea {
   width: 100%;
 }
 
-.button, button,
+.button,
+button,
 input[type=submit],
 input[type=reset],
 input[type=button],
@@ -192,7 +211,9 @@ input[type=file]::file-selector-button {
   cursor: pointer;
   box-sizing: border-box;
 }
-.button:hover, button:hover,
+
+.button:hover,
+button:hover,
 input[type=submit]:hover,
 input[type=reset]:hover,
 input[type=button]:hover,
@@ -202,7 +223,8 @@ input[type=file]::file-selector-button:hover {
   outline: 0;
 }
 
-.button[disabled], button[disabled],
+.button[disabled],
+button[disabled],
 input[type=submit][disabled],
 input[type=reset][disabled],
 input[type=button][disabled],
@@ -210,7 +232,9 @@ input[type=file][disabled] {
   cursor: default;
   opacity: 0.5;
 }
-.button:focus-visible, button:focus-visible,
+
+.button:focus-visible,
+button:focus-visible,
 input[type=submit]:focus-visible,
 input[type=reset]:focus-visible,
 input[type=button]:focus-visible,
@@ -219,9 +243,11 @@ input[type=file]:focus-visible {
   outline-width: 2px;
 }
 
-textarea, select, input {
+textarea,
+select,
+input {
   color: #4a4a4a;
-  padding: 6px 10px; 
+  padding: 6px 10px;
   margin-bottom: 10px;
   background-color: #f1f1f1;
   border: 1px solid #f1f1f1;
@@ -229,7 +255,10 @@ textarea, select, input {
   box-shadow: none;
   box-sizing: border-box;
 }
-textarea:focus, select:focus, input:focus {
+
+textarea:focus,
+select:focus,
+input:focus {
   border: 1px solid #1d7484;
   outline: 0;
 }
@@ -238,7 +267,9 @@ input[type=checkbox]:focus {
   outline: 1px dotted #1d7484;
 }
 
-label, legend, fieldset {
+label,
+legend,
+fieldset {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 600;
@@ -258,18 +289,22 @@ label, legend, fieldset {
   animation-duration: 5s;
   animation-delay: 0s;
 }
+
 .falling-star:nth-child(2) {
   animation-duration: 7s;
   animation-delay: 2s;
 }
+
 .falling-star:nth-child(3) {
   animation-duration: 6s;
   animation-delay: 1s;
 }
+
 .falling-star:nth-child(4) {
   animation-duration: 8s;
   animation-delay: 3s;
 }
+
 .falling-star:nth-child(5) {
   animation-duration: 6.5s;
   animation-delay: 1.5s;
@@ -280,6 +315,7 @@ label, legend, fieldset {
     transform: translateY(0) rotate(0deg);
     opacity: 1;
   }
+
   100% {
     transform: translateY(120vh) rotate(360deg);
     opacity: 0;
@@ -287,11 +323,15 @@ label, legend, fieldset {
 }
 
 user {
-  color: rgb(46, 0, 249);
-
+  color: #fff;
+  background: linear-gradient(#2e11d1);
+  padding: 1px 2px;
+  font-size: 0.82em;
+  font-weight: 700;
 }
+
 .story-container {
-    white-space: pre;
-    line-height: 1.2;
-    color: #444;
-  }
+  white-space: pre;
+  line-height: 1.2;
+  color: #444;
+}
