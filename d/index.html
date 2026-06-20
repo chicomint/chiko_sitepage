@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#efefef">
+  <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+  <title>Draw</title>
+  <style>
+    body {
+      background-color: #efefef;
+      text-align:left;
+      margin: 0;
+      margin-top: 4px;
+      margin-left: 4px;
+      overflow: hidden;
+    }
+    #board {
+      touch-action: none;
+      border: 0.5px solid rgba(0,0,0,0.1);
+      box-shadow: 1px 1px 1px 0.5px rgba(0,0,0,0.1);
+      cursor: crosshair;
+    }
+
+    #floatingButton {
+      background: #97a5a8;
+      box-shadow: 1px 1px 2px 1px rgba(0,0,0,0.2);
+      transition: transform 0.1s, opacity 1s;
+      cursor: pointer;
+    }
+    #floatingButton:active {
+      transform: scale(0.9, 0.9);
+    }
+
+  </style>
+</head>
+
+<body>
+  <canvas touch-action="none" id="board" width="640" height="640" style="width:320px; height:320px;">
+    Opps, you cannot play draw N guess with this browser!
+  </canvas>
+
+  <script src="https://cdn.jsdelivr.net/lodash/4.17.2/lodash.min.js"></script>
+  <script src="js/vendors/pep.js"></script>
+  <script src="js/libs/Board.js"></script>
+  <script src="js/libs/Pointer.js"></script>
+  <script src="js/libs/Pen.js"></script>
+  <script src="js/libs/FloatingButton.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-87066533-1', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+</body>
+</html>
