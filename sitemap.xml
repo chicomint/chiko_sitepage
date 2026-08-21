@@ -2,26 +2,34 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://chiko.cc/</loc>
+    <priority>1.0</priority>
   </url>
   <url>
     <loc>https://chiko.cc/blogs</loc>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://chiko.cc/all_blog</loc>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://chiko.cc/project</loc>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://chiko.cc/credits</loc>
+    <priority>0.5</priority>
   </url>
   <url>
     <loc>https://chiko.cc/cat</loc>
+    <priority>0.5</priority>
   </url>
   <url>
     <loc>https://chiko.cc/math/</loc>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://chiko.cc/d/</loc>
+    <priority>0.5</priority>
   </url>
 </urlset>
