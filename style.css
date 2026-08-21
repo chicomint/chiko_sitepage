@@ -335,3 +335,25 @@ user {
   line-height: 1.2;
   color: #444;
 }
+
+/* 88x31 site button hover :3 */
+.mikumikumiuku img,
+.mikumikumiuku a img {
+  transition: transform 0.12s ease;
+}
+
+.mikumikumiuku img:hover,
+.mikumikumiuku a img:hover {
+  transform: scale(1.15) rotate(-2deg);
+}
+
+.mikumikumiuku a:hover {
+  border-bottom: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mikumikumiuku img,
+  .mikumikumiuku a img {
+    transition: none;
+  }
+}
