@@ -1,25 +1,30 @@
-@import url(https://tilomitra.github.io/infinite/infinite.css);
+@import url("https://tilomitra.github.io/infinite/infinite.css");
 
 /* Sakura.css v1.5.1
  * ================
  * Minimal css theme.
  * Project: https://github.com/oxalorg/sakura/
  */
+
 /* Body */
 html {
   font-size: 62.5%;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  background-image: url("media/bbg.png");
 }
 
 body {
+  background-image: url("media/bbg.png");
   font-size: 1.8rem;
   line-height: 1.618;
   max-width: 38em;
-  margin: auto;
+  margin: 0 auto;
   color: #4a4a4a;
   background-color: #f9f9f9;
   padding: 13px;
 }
+
+.
 
 @media (max-width: 684px) {
   body {
@@ -33,12 +38,7 @@ body {
   }
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+h1, h2, h3, h4, h5, h6 {
   line-height: 1.1;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
   font-weight: 700;
@@ -50,38 +50,19 @@ h6 {
   word-break: break-word;
 }
 
-h1 {
-  font-size: 2.35em;
-}
-
-h2 {
-  font-size: 2em;
-}
-
-h3 {
-  font-size: 1.75em;
-}
-
-h4 {
-  font-size: 1.5em;
-}
-
-h5 {
-  font-size: 1.25em;
-}
-
-h6 {
-  font-size: 1em;
-}
+h1 { font-size: 2.35em; }
+h2 { font-size: 2em; }
+h3 { font-size: 1.75em; }
+h4 { font-size: 1.5em; }
+h5 { font-size: 1.25em; }
+h6 { font-size: 1em; }
 
 p {
   margin-top: 0px;
   margin-bottom: 2.5rem;
 }
 
-small,
-sub,
-sup {
+small, sub, sup {
   font-size: 75%;
 }
 
@@ -129,15 +110,13 @@ blockquote p {
   margin-bottom: 0;
 }
 
-img,
-video {
+img, video {
   height: auto;
   max-width: 100%;
   margin-top: 0px;
   margin-bottom: 2.5rem;
 }
 
-/* Pre and Code */
 pre {
   background-color: #f1f1f1;
   display: block;
@@ -148,23 +127,20 @@ pre {
   font-size: 0.9em;
 }
 
-code,
-kbd,
-samp {
+code, kbd, samp {
   font-size: 0.9em;
   padding: 0 0.5em;
   background-color: #f1f1f1;
   white-space: pre-wrap;
 }
 
-pre>code {
+pre > code {
   padding: 0;
   background-color: transparent;
   white-space: pre;
   font-size: 1em;
 }
 
-/* Tables */
 table {
   text-align: justify;
   width: 100%;
@@ -172,20 +148,16 @@ table {
   margin-bottom: 2rem;
 }
 
-td,
-th {
+td, th {
   padding: 0.5em;
   border-bottom: 1px solid #f1f1f1;
 }
 
-/* Buttons, forms and input */
-input,
-textarea {
+input, textarea {
   border: 1px solid #4a4a4a;
 }
 
-input:focus,
-textarea:focus {
+input:focus, textarea:focus {
   border: 1px solid #1d7484;
 }
 
@@ -193,12 +165,7 @@ textarea {
   width: 100%;
 }
 
-.button,
-button,
-input[type=submit],
-input[type=reset],
-input[type=button],
-input[type=file]::file-selector-button {
+.button, button, input[type=submit], input[type=reset], input[type=button], input[type=file]::file-selector-button {
   display: inline-block;
   padding: 5px 10px;
   text-align: center;
@@ -212,40 +179,13 @@ input[type=file]::file-selector-button {
   box-sizing: border-box;
 }
 
-.button:hover,
-button:hover,
-input[type=submit]:hover,
-input[type=reset]:hover,
-input[type=button]:hover,
-input[type=file]::file-selector-button:hover {
+.button:hover, button:hover, input[type=submit]:hover, input[type=reset]:hover, input[type=button]:hover, input[type=file]::file-selector-button:hover {
   background-color: #982c61;
   color: #f9f9f9;
   outline: 0;
 }
 
-.button[disabled],
-button[disabled],
-input[type=submit][disabled],
-input[type=reset][disabled],
-input[type=button][disabled],
-input[type=file][disabled] {
-  cursor: default;
-  opacity: 0.5;
-}
-
-.button:focus-visible,
-button:focus-visible,
-input[type=submit]:focus-visible,
-input[type=reset]:focus-visible,
-input[type=button]:focus-visible,
-input[type=file]:focus-visible {
-  outline-style: solid;
-  outline-width: 2px;
-}
-
-textarea,
-select,
-input {
+textarea, select, input {
   color: #4a4a4a;
   padding: 6px 10px;
   margin-bottom: 10px;
@@ -256,25 +196,11 @@ input {
   box-sizing: border-box;
 }
 
-textarea:focus,
-select:focus,
-input:focus {
-  border: 1px solid #1d7484;
-  outline: 0;
-}
-
-input[type=checkbox]:focus {
-  outline: 1px dotted #1d7484;
-}
-
-label,
-legend,
-fieldset {
+label, legend, fieldset {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 600;
 }
-
 
 .falling-star {
   position: absolute;
@@ -285,46 +211,21 @@ fieldset {
   opacity: 0.8;
 }
 
-.falling-star:nth-child(1) {
-  animation-duration: 5s;
-  animation-delay: 0s;
-}
-
-.falling-star:nth-child(2) {
-  animation-duration: 7s;
-  animation-delay: 2s;
-}
-
-.falling-star:nth-child(3) {
-  animation-duration: 6s;
-  animation-delay: 1s;
-}
-
-.falling-star:nth-child(4) {
-  animation-duration: 8s;
-  animation-delay: 3s;
-}
-
-.falling-star:nth-child(5) {
-  animation-duration: 6.5s;
-  animation-delay: 1.5s;
-}
+.falling-star:nth-child(1) { animation-duration: 5s; animation-delay: 0s; }
+.falling-star:nth-child(2) { animation-duration: 7s; animation-delay: 2s; }
+.falling-star:nth-child(3) { animation-duration: 6s; animation-delay: 1s; }
+.falling-star:nth-child(4) { animation-duration: 8s; animation-delay: 3s; }
+.falling-star:nth-child(5) { animation-duration: 6.5s; animation-delay: 1.5s; }
 
 @keyframes fall {
-  0% {
-    transform: translateY(0) rotate(0deg);
-    opacity: 1;
-  }
-
-  100% {
-    transform: translateY(120vh) rotate(360deg);
-    opacity: 0;
-  }
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(120vh) rotate(360deg); opacity: 0; }
 }
 
+/* FIXED: Corrected linear-gradient syntax */
 user {
   color: #fff;
-  background: linear-gradient(#2e11d1);
+  background: linear-gradient(135deg, #2e11d1, #1d7484);
   padding: 1px 2px;
   font-size: 0.82em;
   font-weight: 700;
@@ -336,14 +237,11 @@ user {
   color: #444;
 }
 
-/* 88x31 site button hover :3 */
-.mikumikumiuku img,
-.mikumikumiuku a img {
+.mikumikumiuku img, .mikumikumiuku a img {
   transition: transform 0.12s ease;
 }
 
-.mikumikumiuku img:hover,
-.mikumikumiuku a img:hover {
+.mikumikumiuku img:hover, .mikumikumiuku a img:hover {
   transform: scale(1.15) rotate(-2deg);
 }
 
@@ -352,8 +250,104 @@ user {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .mikumikumiuku img,
-  .mikumikumiuku a img {
+  .mikumikumiuku img, .mikumikumiuku a img {
     transition: none;
   }
+}
+
+/* Side images */
+.side-image {
+  position: absolute;
+  display: block;
+  margin: 0;
+  border: none;
+
+  /* Show the entire image */
+  object-fit: contain;
+  object-position: center;
+
+  /* Prevent Sakura from resizing/cropping it */
+  max-width: none;
+  max-height: none;
+}
+
+.side-left {
+  width: 245px;
+  height: 195px;
+  left: 2.5vw;
+  top: 428px;
+}
+
+.side-right-small {
+  width: 105px;
+  height: 85px;
+  right: 28vw;
+  top: 47px;
+}
+
+.side-right {
+  width: 305px;
+  height: 255px;
+  right: 2vw;
+  top: 56px;
+}
+
+@media (max-width: 900px) {
+  .side-image {
+    display: none;
+  }
+}
+
+/* Public drawing board */
+.drawing-canvas {
+  display: block;
+  width: 100%;
+  max-width: 640px;
+  height: auto;
+  box-sizing: border-box;
+  border: 1px solid #1d7484;
+  background: #fff;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.drawing-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  margin: 12px 0;
+  font-size: 0.85em;
+}
+
+.drawing-tools label,
+.drawing-tools input,
+.drawing-tools button {
+  margin: 0;
+}
+
+.drawing-tools input[type="color"] {
+  width: 42px;
+  height: 30px;
+  padding: 2px;
+}
+
+.drawing-tools input[type="range"] { width: 90px; padding: 0; }
+.drawing-tools button[aria-pressed="true"] { outline: 1px solid currentColor; outline-offset: 2px; }
+.drawing-tools button:disabled { opacity: 0.6; }
+
+.drawing-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr));
+  gap: 12px;
+}
+
+.drawing-gallery a { display: block; border: 0; }
+.drawing-gallery img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  margin: 0;
+  background: #fff;
 }

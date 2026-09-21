@@ -1,0 +1,17 @@
+{
+  "name": "chicomint-presence",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test test/*.test.js"
+  },
+  "dependencies": {
+    "pngjs": "^7.0.0",
+    "ws": "^8.18.3"
+  }
+}

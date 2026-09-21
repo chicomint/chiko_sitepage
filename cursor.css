@@ -1,0 +1,111 @@
+/* Miku cursor theme, with native fallbacks. */
+.visitor-stats {
+  display: grid;
+  grid-template-columns: max-content minmax(5ch, max-content);
+  gap: 0 1.5em;
+  width: max-content;
+  margin: 1em 0;
+  font: 0.8em/1.6 monospace;
+  color: rgb(81, 147, 31);
+}
+
+.visitor-stats dt,
+.visitor-stats dd {
+  margin: 0;
+}
+
+.visitor-stats dd {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.remote-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 96px;
+  height: 96px;
+  z-index: 2147483646;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0.8;
+}
+
+.remote-cursor * {
+  pointer-events: none;
+}
+
+.remote-cursor img {
+  display: block;
+  width: 96px;
+  height: 96px;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.remote-cursor span {
+  position: absolute;
+  top: 20px;
+  left: 16px;
+  padding: 0 2px;
+  color: #51931f;
+  background: #f9f9f9;
+  font: 11px/1.4 monospace;
+  white-space: nowrap;
+}
+
+@media (prefers-color-scheme: dark) {
+  .remote-cursor span { background: #222; color: #7fb82a; }
+  .visitor-stats { color: #7fb82a; }
+}
+
+html,
+body {
+  cursor: url("media/miku-miku-oo-ee-oo/Normal.cur") 0 0, auto;
+}
+
+a[href],
+button,
+[role="button"],
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+select,
+summary {
+  cursor: url("media/miku-miku-oo-ee-oo/Normal.cur") 0 0, pointer;
+}
+
+button:disabled,
+input:disabled,
+select:disabled,
+textarea:disabled {
+  cursor: url("media/miku-miku-oo-ee-oo/NotAllowed.cur") 15 15, not-allowed;
+}
+
+#miku-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 96px;
+  height: 96px;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  pointer-events: none;
+  z-index: 2147483647;
+  visibility: hidden;
+}
+
+@media (any-hover: hover) and (any-pointer: fine) and (prefers-reduced-motion: no-preference) {
+  html.miku-cursor-active,
+  html.miku-cursor-active * {
+    cursor: none !important;
+  }
+
+  html.miku-cursor-active #miku-cursor {
+    visibility: visible;
+  }
+}

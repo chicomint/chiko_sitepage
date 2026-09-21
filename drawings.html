@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>drawings | chicomint</title>
+    <link rel="shortcut icon" type="image/x-icon" href="media/chiki.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="style.css?v=1.7">
+    <link rel="stylesheet" href="sakura.css" media="screen" />
+    <link rel="stylesheet" href="sakura-dark.css" media="screen and (prefers-color-scheme: dark)" />
+    <script src="drawings.js?v=1" defer></script>
+  <link rel="stylesheet" href="cursor.css?v=3">
+  <script src="cursor.js?v=2" defer></script>
+  <script src="realtime.js?v=3" defer></script>
+</head>
+
+<body>
+
+    <h1>Cchicomint</h1>
+    <a href="index.html">| Homepage |</a>
+    <a href="blogs.html">blogs |</a>
+    <a href="project.html">project |</a>
+    <a href="credits.html">credits |</a>
+    <a href="drawings.html">drawings |</a>
+        <a href="https://chicomint.atabook.org/">Guestbook |</a>
+    <hr>
+
+    <main>
+        <p>Leave a little drawing here :3<br></p>
+        <canvas id="drawing-canvas" class="drawing-canvas" width="640" height="480"
+                aria-label="Drawing canvas. Draw with your mouse, pen, or touchscreen.">
+            Your browser needs canvas support to draw here.
+        </canvas>
+        <div class="drawing-tools" role="group" aria-label="Drawing tools">
+            <label for="drawing-color">Color:</label>
+            <input id="drawing-color" type="color" value="#222222">
+            <label for="drawing-size">Brush size:</label>
+            <input id="drawing-size" type="range" min="1" max="32" value="4">
+            <output id="drawing-size-value" for="drawing-size">4</output>
+            <button id="drawing-draw" type="button" aria-pressed="true">Draw</button>
+            <button id="drawing-erase" type="button" aria-pressed="false">Eraser</button>
+            <button id="drawing-undo" type="button" disabled>Undo</button>
+            <button id="drawing-redo" type="button" disabled>Redo</button>
+            <button id="drawing-clear" type="button">Clear</button>
+            <button id="drawing-send" type="button">Send drawing</button>
+        </div>
+        <p id="drawing-status" role="status" aria-live="polite"></p>
+        <noscript>Enable JavaScript to draw and view the gallery.</noscript>
+        <h2>Other people drawings</h2>
+        <p id="drawing-gallery-status" role="status">Loading drawings...</p>
+        <div id="drawing-gallery" class="drawing-gallery"></div>
+    </main>
+<footer>
+    <hr>
+    <p style="animation: opacityPulse 2s ease-out;
+    animation-iteration-count: infinite; 
+    opacity: 1; color: rgb(81, 147, 31);">@Chicomint 2022-untill i die&lt;3 </p>
+</footer>
+
+<script>
+window.addEventListener("DOMContentLoaded", () => {
+    const canvas = document.getElementById("drawing-canvas");
+    const undoButton = document.getElementById("drawing-undo");
+    const redoButton = document.getElementById("drawing-redo");
+    const clearButton = document.getElementById("drawing-clear");
+
+    if (!canvas || !undoButton || !redoButton) return;
+
+    const ctx = canvas.getContext("2d");
+    const undoStack = [];
+    const redoStack = [];
+    const MAX_HISTORY = 30;
+    let restoring = false;
+    let pointerSnapshot = null;
+
+    function snapshot() {
+        return ctx.getImageData(0, 0, canvas.width, canvas.height);
+    }
+
+    function sameSnapshot(a, b) {
+        if (!a || !b || a.data.length !== b.data.length) return false;
+        for (let i = 0; i < a.data.length; i++) {
+            if (a.data[i] !== b.data[i]) return false;
+        }
+        return true;
+    }
+
+    function updateButtons() {
+        undoButton.disabled = undoStack.length === 0;
+        redoButton.disabled = redoStack.length === 0;
+    }
+
+    function pushUndo(state) {
+        undoStack.push(state);
+        if (undoStack.length > MAX_HISTORY) undoStack.shift();
+        redoStack.length = 0;
+        updateButtons();
+    }
+
+    function undo() {
+        if (!undoStack.length || restoring) return;
+        restoring = true;
+        redoStack.push(snapshot());
+        ctx.putImageData(undoStack.pop(), 0, 0);
+        restoring = false;
+        updateButtons();
+    }
+
+    function redo() {
+        if (!redoStack.length || restoring) return;
+        restoring = true;
+        undoStack.push(snapshot());
+        ctx.putImageData(redoStack.pop(), 0, 0);
+        restoring = false;
+        updateButtons();
+    }
+
+    canvas.addEventListener("pointerdown", () => {
+        if (!restoring) pointerSnapshot = snapshot();
+    }, true);
+
+    function finishStroke() {
+        if (restoring || !pointerSnapshot) return;
+        const after = snapshot();
+        if (!sameSnapshot(pointerSnapshot, after)) pushUndo(pointerSnapshot);
+        pointerSnapshot = null;
+    }
+
+    canvas.addEventListener("pointerup", finishStroke, true);
+    canvas.addEventListener("pointercancel", finishStroke, true);
+    canvas.addEventListener("pointerleave", (event) => {
+        if (event.buttons === 0) finishStroke();
+    }, true);
+
+    if (clearButton) {
+        clearButton.addEventListener("click", () => {
+            if (restoring) return;
+            const beforeClear = snapshot();
+            setTimeout(() => {
+                const afterClear = snapshot();
+                if (!sameSnapshot(beforeClear, afterClear)) pushUndo(beforeClear);
+            }, 0);
+        }, true);
+    }
+
+    undoButton.addEventListener("click", undo);
+    redoButton.addEventListener("click", redo);
+
+    document.addEventListener("keydown", (event) => {
+        const modifier = event.ctrlKey || event.metaKey;
+        if (!modifier) return;
+
+        const key = event.key.toLowerCase();
+        if (key === "z" && !event.shiftKey) {
+            event.preventDefault();
+            undo();
+        } else if ((key === "z" && event.shiftKey) || key === "y") {
+            event.preventDefault();
+            redo();
+        }
+    });
+
+    updateButtons();
+});
+</script>
+
+</body>
+
+</html>
