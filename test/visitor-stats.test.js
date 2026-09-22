@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, writeFileSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { createHmac } from 'node:crypto';
 import { visitorStats, VISIT_WINDOW } from '../visitor-stats.js';
 import { clientIpResolver, normalizeIp } from '../client-ip.js';
 
@@ -10,7 +11,7 @@ test('fixed one-hour windows, separate hits, restart persistence and Bangkok rol
   const folder = mkdtempSync(join(tmpdir(), 'visit-windows-'));
   const csv = join(folder, 'stats.csv');
   writeFileSync(csv, 'day,hits,views,bandwidth\n2026-09-19,20,10,100\n');
-  let now = Date.UTC(2026, 8, 21, 16, 30);
+  let now = Date.UTC(2026, 8, 21, 16, 0);
   let stats = visitorStats(csv, { now: () => now });
   try {
     assert.equal(stats.record('1.2.3.4', false), false);
@@ -26,7 +27,8 @@ test('fixed one-hour windows, separate hits, restart persistence and Bangkok rol
     now++;
     assert.equal(stats.record('1.2.3.4', true), true);
     await stats.flush();
-    assert.match(readFileSync(csv, 'utf8'), /2026-09-22,3,1,0/);
+    assert.match(readFileSync(csv, 'utf8'), /2026-09-21,25,2,0/);
+    assert.match(readFileSync(csv, 'utf8'), /2026-09-22,1,1,0/);
     assert.equal(JSON.parse(readFileSync(csv + '.sessions.json')).sessions.length, 1);
     assert.ok(!readFileSync(csv + '.sessions.json', 'utf8').includes('1.2.3.4'));
     now += VISIT_WINDOW;
@@ -48,6 +50,53 @@ test('capacity does not evict active sessions and recount them', async () => {
     now += VISIT_WINDOW;
     assert.equal(stats.record('b', true), true);
   } finally { await stats.close(); rmSync(folder, { recursive: true }); }
+});
+
+test('deploying fixed buckets migrates persisted rolling expirations without resetting totals', async () => {
+  const folder = mkdtempSync(join(tmpdir(), 'visit-migration-'));
+  const csv = join(folder, 'stats.csv');
+  writeFileSync(csv, 'day,hits,views,bandwidth\n2026-09-22,7,3,0\n');
+  const secret = 'ab'.repeat(32);
+  const key = createHmac('sha256', secret).update('203.0.113.7').digest('hex');
+  let now = Date.UTC(2026, 8, 22, 10, 59);
+  writeFileSync(csv + '.sessions.json', JSON.stringify({ secret,
+    sessions: [[key, Date.UTC(2026, 8, 22, 11, 45)]] }));
+  const stats = visitorStats(csv, { now: () => now });
+  try {
+    assert.equal(stats.record('203.0.113.7', true), false);
+    now = Date.UTC(2026, 8, 22, 11);
+    assert.equal(stats.record('203.0.113.7', true), true);
+    assert.deepEqual(stats.counts(), { hits: 9, visits: 4 });
+  } finally { await stats.close(); rmSync(folder, { recursive: true }); }
+});
+
+test('a visit just before the clock hour counts again in the next hourly bucket', async () => {
+  const folder = mkdtempSync(join(tmpdir(), 'visit-bucket-'));
+  const csv = join(folder, 'stats.csv');
+  writeFileSync(csv, 'day,hits,views,bandwidth\n');
+  let now = Date.UTC(2026, 8, 21, 10, 59, 59);
+  let stats = visitorStats(csv, { now: () => now });
+  try {
+    assert.equal(stats.record('ip-a', true), true);
+    assert.equal(stats.record('ip-a', true), false);
+    await stats.close();
+    stats = visitorStats(csv, { now: () => now });
+    assert.equal(stats.record('ip-a', true), false);
+    now += 1000;
+    assert.equal(stats.record('ip-a', true), true);
+    assert.equal(stats.record('ip-a', false), false);
+    assert.equal(stats.record('ip-b', true), true);
+    assert.deepEqual(stats.counts(), { visits: 3, hits: 6 });
+  } finally { await stats.close(); rmSync(folder, { recursive: true }); }
+});
+
+test('rotating verified Railway peers resolve the same client, not a spoofed CF header', () => {
+  const resolve = clientIpResolver({ trustedProxies: ['100.64.0.4','100.64.0.7'], header: 'x-real-ip' });
+  for (const remoteAddress of ['100.64.0.4','100.64.0.7']) {
+    assert.equal(resolve({ socket: { remoteAddress }, headers: { 'x-real-ip': '203.0.113.2',
+      'cf-connecting-ip': '1.1.1.1', 'x-forwarded-for': '8.8.8.8' } }), '203.0.113.2');
+  }
+  assert.equal(resolve({ socket: { remoteAddress: '203.0.113.3' }, headers: { 'x-real-ip': '8.8.8.8' } }), '203.0.113.3');
 });
 
 test('proxy trust, spoofed headers, IPv6 normalization and multi-hop chains', () => {

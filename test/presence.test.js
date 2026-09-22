@@ -122,6 +122,25 @@ test('tabs, refreshes and reconnects do not inflate on-site visitors', async t =
   await refreshed.until(m => m.type === 'stats' && m.online === 2);
 });
 
+test('explicit custom-domain origin connects when upstream Host is different', async t => {
+  const app = await fixture(t, { allowedOrigins: ['https://chiko.cc'], heartbeatMs: 30 });
+  const ws = new WebSocket(app.origin.replace('http:', 'ws:') + '/presence', { origin: 'https://chiko.cc' });
+  await once(ws, 'open');
+  const response = once(ws, 'message');
+  ws.send(JSON.stringify({ type: 'hello', page: '/', active: true }));
+  assert.equal(JSON.parse((await response)[0]).type, 'welcome');
+  await delay(100);
+  assert.equal(ws.readyState, WebSocket.OPEN);
+  ws.close();
+  await once(ws, 'close');
+  const rejected = new WebSocket(app.origin.replace('http:', 'ws:') + '/presence', { origin: 'https://evil.example' });
+  rejected.on('error', () => {});
+  const [, res] = await once(rejected, 'unexpected-response');
+  assert.equal(res.statusCode, 403);
+  res.resume();
+  rejected.terminate();
+});
+
 test('cursors use normalized coordinates, same-page peers, no self echo, snapshots and cleanup', async t => {
   const app = await fixture(t);
   const a = await app.client();
@@ -173,7 +192,7 @@ test('forged identities, invalid coordinates and event floods are rejected', asy
   assert.equal(forged.messages.some(m => m.type === 'cursor'), false);
   for (let i = 0; i < 20; i++) a.send({ type: 'cursor', x: 0.5, y: 0.5 });
   await delay(45);
-  assert.equal(forged.messages.filter(m => m.type === 'cursor').length, 1);
+  assert.ok(forged.messages.filter(m => m.type === 'cursor').length <= 2);
   const closed = once(a.ws, 'close');
   for (let i = 0; i < 100; i++) a.send({ type: 'cursor', x: 0.5, y: 0.5 });
   assert.equal((await closed)[0], 1008);
@@ -212,4 +231,33 @@ test('heartbeat removes a silently lost visitor', async t => {
   const closed = once(stale.ws, 'close');
   await closed;
   await observer.until(m => m.type === 'stats' && m.online === 1);
+});
+
+test('browser heartbeat replies without changing visits or presence identity', async t => {
+  const app = await fixture(t);
+  const a = await app.client();
+  a.reset();
+  a.send({ type: 'ping' });
+  await a.until(m => m.type === 'pong');
+  const b = await app.client({ token: a.token });
+  await b.until(m => m.type === 'stats' && m.online === 1);
+});
+
+test('cursor bursts retain the final position instead of dropping it', async t => {
+  const app = await fixture(t);
+  const a = await app.client();
+  const b = await app.client();
+  a.send({ type: 'cursor', x: 0.1, y: 0.1 });
+  await b.until(m => m.type === 'cursor' && m.x === 0.1);
+  a.send({ type: 'cursor', x: 0.5, y: 0.5 });
+  a.send({ type: 'cursor', x: 0.9, y: 0.9 });
+  await b.until(m => m.type === 'cursor' && m.x === 0.9);
+  assert.ok(b.messages.filter(m => m.type === 'cursor').length <= 3);
+  b.reset();
+  a.send({ type: 'cursor', x: 0.7, y: 0.7 });
+  a.send({ type: 'hide' });
+  await b.until(m => m.type === 'leave');
+  await delay(50);
+  const messages = b.messages.filter(m => ['cursor', 'leave'].includes(m.type));
+  assert.equal(messages.at(-1).type, 'leave');
 });

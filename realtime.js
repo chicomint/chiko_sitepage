@@ -1,5 +1,6 @@
 (() => {
   const script = document.currentScript;
+  const presenceOnly = script.hasAttribute('data-presence-only');
   const endpoint = new URL('/presence', location.href);
   endpoint.protocol = endpoint.protocol === 'https:' || endpoint.protocol === 'wss:' ? 'wss:' : 'ws:';
   const asset = new URL('media/miku-miku-oo-ee-oo/Normal_96.gif', script.src);
@@ -19,6 +20,10 @@
   let movementTimer;
   let lastSent = 0;
   let cursorVisible = false;
+  let frame;
+  let heartbeat;
+  let lastPong = 0;
+  let disconnect;
   const active = () => !document.hidden;
   const readToken = () => { try { return localStorage.getItem(key) || token; } catch { return token; } };
   const writeToken = (value) => { token = value; try { localStorage.setItem(key, value); } catch {} };
@@ -31,7 +36,7 @@
     peer.element.style.transform = `translate3d(${peer.x * innerWidth}px, ${peer.y * innerHeight}px, 0)`;
   }
   function showPeer(data) {
-    if (!active() || typeof data.id !== 'string' || typeof data.label !== 'string' ||
+    if (presenceOnly || !active() || typeof data.id !== 'string' || typeof data.label !== 'string' ||
         !Number.isFinite(data.x) || !Number.isFinite(data.y)) return;
     let peer = peers.get(data.id);
     if (!peer) {
@@ -49,9 +54,24 @@
       peer = { element, image };
       peers.set(data.id, peer);
     }
-    peer.x = Math.max(0, Math.min(1, data.x));
-    peer.y = Math.max(0, Math.min(1, data.y));
-    position(peer);
+    peer.fromX = peer.x ?? data.x;
+    peer.fromY = peer.y ?? data.y;
+    peer.targetX = Math.max(0, Math.min(1, data.x));
+    peer.targetY = Math.max(0, Math.min(1, data.y));
+    peer.started = performance.now();
+    if (!frame) frame = requestAnimationFrame(renderPeers);
+  }
+  function renderPeers(now) {
+    frame = null;
+    let moving = false;
+    for (const peer of peers.values()) {
+      const progress = reducedMotion.matches ? 1 : Math.min(1, (now - peer.started) / 33);
+      peer.x = peer.fromX + (peer.targetX - peer.fromX) * progress;
+      peer.y = peer.fromY + (peer.targetY - peer.fromY) * progress;
+      position(peer);
+      moving ||= progress < 1;
+    }
+    if (moving) frame = requestAnimationFrame(renderPeers);
   }
   function updateStats(data) {
     for (const field of ['visits', 'online']) {
@@ -87,9 +107,9 @@
     lastSent = performance.now();
   }
   document.addEventListener('pointermove', (event) => {
-    if (event.pointerType !== 'mouse' || !mouse.matches || !active() || !ready) return;
+    if (presenceOnly || event.pointerType !== 'mouse' || !mouse.matches || !active() || !ready) return;
     pending = { x: event.clientX / innerWidth, y: event.clientY / innerHeight };
-    if (!movementTimer) movementTimer = setTimeout(flushCursor, Math.max(0, 40 - (performance.now() - lastSent)));
+    if (!movementTimer) movementTimer = setTimeout(flushCursor, Math.max(0, 33 - (performance.now() - lastSent)));
   }, { passive: true });
   document.addEventListener('pointerout', (event) => { if (!event.relatedTarget) cancelMovement(); });
   document.addEventListener('pointerdown', (event) => { if (event.pointerType !== 'mouse') hideCursor(); });
@@ -110,9 +130,23 @@
       let current;
       try { current = socket = new WebSocket(endpoint); }
       catch { offline(); scheduleReconnect(); done(); return; }
-      const timeout = setTimeout(() => { current.close(); done(); }, 8000);
+      const timeout = setTimeout(() => lost(), 8000);
       const finish = () => { clearTimeout(timeout); done(); };
+      function lost() {
+        finish();
+        if (socket !== current) return;
+        socket = null;
+        ready = false;
+        clearInterval(heartbeat);
+        hideCursor();
+        clearPeers();
+        offline();
+        current.close();
+        scheduleReconnect();
+      }
+      disconnect = lost;
       current.addEventListener('open', () => {
+        if (socket !== current) return;
         current.send(JSON.stringify({ type: 'hello', token: readToken(), page: location.pathname, active: active() }));
       });
       current.addEventListener('message', (event) => {
@@ -123,9 +157,16 @@
           writeToken(data.token);
           ready = true;
           attempts = 0;
+          lastPong = Date.now();
+          clearInterval(heartbeat);
+          heartbeat = setInterval(() => {
+            if (Date.now() - lastPong > 30000) lost();
+            else send({ type: 'ping' });
+          }, 10000);
           send({ type: 'active', active: active() });
           finish();
-        } else if (data.type === 'stats') updateStats(data);
+        } else if (data.type === 'pong') lastPong = Date.now();
+        else if (data.type === 'stats') updateStats(data);
         else if (data.type === 'cursor') showPeer(data);
         else if (data.type === 'leave') remove(data.id);
         else if (data.type === 'snapshot' && Array.isArray(data.peers)) {
@@ -133,16 +174,8 @@
           for (const peer of data.peers) showPeer(peer);
         }
       });
-      current.addEventListener('close', () => {
-        finish();
-        if (socket !== current) return;
-        ready = false;
-        hideCursor();
-        clearPeers();
-        offline();
-        scheduleReconnect();
-      });
-      current.addEventListener('error', () => current.close());
+      current.addEventListener('close', lost);
+      current.addEventListener('error', lost);
     });
   }
   async function connect() {
@@ -150,7 +183,10 @@
     connecting = true;
     try {
       // Serializes first-time identity creation across tabs on this origin.
-      if (navigator.locks) await navigator.locks.request('chicomint-presence-identity', openSocket);
+      if (navigator.locks) {
+        try { await navigator.locks.request('chicomint-presence-identity', openSocket); }
+        catch { await openSocket(); }
+      }
       else await openSocket();
     } finally { connecting = false; }
   }
@@ -158,13 +194,19 @@
     cancelMovement();
     if (!active()) clearPeers();
     send({ type: 'active', active: active() });
+    if (active() && ready) {
+      if (Date.now() - lastPong > 30000) disconnect();
+      else send({ type: 'ping' });
+    }
     if (!document.hidden && !ready) { clearTimeout(retry); retry = null; connect(); }
   }
   document.addEventListener('visibilitychange', activityChanged);
   window.addEventListener('focus', activityChanged);
+  window.addEventListener('online', activityChanged);
   window.addEventListener('pagehide', () => {
     stopped = true;
     clearTimeout(retry);
+    clearInterval(heartbeat);
     retry = null;
     hideCursor();
     clearPeers();

@@ -121,11 +121,18 @@ export function createPresenceServer({
     for (const ws of wss.clients) if (ws.visitor) send(ws, message);
   }
   function broadcastPeer(source, message) {
+    const encoded = JSON.stringify(message);
     for (const ws of wss.clients) {
-      if (ws.visitor && ws !== source && ws.page === source.page && ws.active) send(ws, message);
+      if (ws.visitor && ws !== source && ws.page === source.page && ws.active && ws.readyState === WebSocket.OPEN) {
+        if (ws.bufferedAmount > 65536) ws.terminate();
+        else ws.send(encoded);
+      }
     }
   }
   function hide(ws) {
+    clearTimeout(ws.cursorTimer);
+    ws.cursorTimer = null;
+    ws.pendingCursor = null;
     if (!ws.position) return;
     ws.position = null;
     broadcastPeer(ws, { type: 'leave', id: ws.id });
@@ -144,6 +151,14 @@ export function createPresenceServer({
     ws.alive = true;
     ws.active = false;
     ws.lastCursor = 0;
+    function flushCursor() {
+      ws.cursorTimer = null;
+      if (!ws.pendingCursor || !ws.active || ws.readyState !== WebSocket.OPEN) return;
+      ws.lastCursor = Date.now();
+      ws.position = ws.pendingCursor;
+      ws.pendingCursor = null;
+      broadcastPeer(ws, { type: 'cursor', id: ws.id, label: ws.label, ...ws.position });
+    }
     let tokens = 60;
     let lastRefill = Date.now();
     const helloTimeout = setTimeout(() => ws.terminate(), 5000);
@@ -179,14 +194,24 @@ export function createPresenceServer({
         return;
       }
       if (message.type === 'cursor') {
-        if (!ws.active || !Number.isFinite(message.x) || !Number.isFinite(message.y) || now - ws.lastCursor < 35) return;
-        ws.lastCursor = now;
-        ws.position = { x: Math.max(0, Math.min(1, message.x)), y: Math.max(0, Math.min(1, message.y)) };
-        broadcastPeer(ws, { type: 'cursor', id: ws.id, label: ws.label, ...ws.position });
+        if (!ws.active || !Number.isFinite(message.x) || !Number.isFinite(message.y)) return;
+        ws.pendingCursor = { x: Math.max(0, Math.min(1, message.x)), y: Math.max(0, Math.min(1, message.y)) };
+        if (!ws.cursorTimer) {
+          const remaining = 30 - (now - ws.lastCursor);
+          if (remaining <= 0) flushCursor();
+          else ws.cursorTimer = setTimeout(flushCursor, remaining);
+        }
+      } else if (message.type === 'ping') {
+        send(ws, { type: 'pong' });
       } else if (message.type === 'hide') hide(ws);
       else if (message.type === 'active' && typeof message.active === 'boolean') {
         if (ws.active === message.active) return;
         ws.active = message.active;
+        if (!ws.active) {
+          clearTimeout(ws.cursorTimer);
+          ws.cursorTimer = null;
+          ws.pendingCursor = null;
+        }
         // Inactive tabs keep their last position but cannot broadcast movement.
         if (ws.active) snapshot(ws);
       } else ws.close(1008, 'Invalid event');

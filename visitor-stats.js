@@ -24,8 +24,9 @@ export function visitorStats(filename, { now = Date.now, maxSessions = 100000 } 
     const saved = JSON.parse(readFileSync(sessionsPath, 'utf8'));
     if (!/^[a-f0-9]{64}$/.test(saved.secret) || !Array.isArray(saved.sessions)) throw new Error('Invalid visit sessions');
     secret = saved.secret;
-    for (const [key, expires] of saved.sessions.sort((a, b) => a[1] - b[1])) {
+    for (let [key, expires] of saved.sessions.sort((a, b) => a[1] - b[1])) {
       if (!/^[a-f0-9]{64}$/.test(key) || !Number.isSafeInteger(expires)) throw new Error('Invalid visit session');
+      expires = Math.floor(expires / VISIT_WINDOW) * VISIT_WINDOW;
       if (expires > now() && sessions.size < maxSessions) sessions.set(key, expires);
     }
   }
@@ -77,7 +78,7 @@ export function visitorStats(filename, { now = Date.now, maxSessions = 100000 } 
       if (sessions.has(key)) return false;
       // Do not evict live windows: doing so would recount returning visitors.
       if (sessions.size >= maxSessions) return false;
-      sessions.set(key, time + VISIT_WINDOW);
+      sessions.set(key, (Math.floor(time / VISIT_WINDOW) + 1) * VISIT_WINDOW);
       row[1]++; visits++;
       return true;
     },
