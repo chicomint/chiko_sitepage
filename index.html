@@ -14,6 +14,50 @@
   <script src="realtime.js?v=4" defer></script>
 </head>
 
+    <style>
+        .update-popup {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: 9999;
+            padding: 16px;
+        }
+
+        .update-popup-box {
+            max-width: 420px;
+            background: #f9f9f9;
+            color: #4a4a4a;
+            border: 1px solid #999;
+            padding: 18px;
+            text-align: center;
+        }
+
+        .update-popup-box button {
+            margin-top: 12px;
+            padding: 6px 14px;
+            cursor: pointer;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .update-popup-box {
+                background: #111;
+                color: #ddd;
+                border-color: #666;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="update-popup" id="update-popup" role="dialog" aria-modal="true" aria-label="Site update notice">
+        <div class="update-popup-box">
+            <p>I have been updating the data. Do not drawings!! It won't be save..Sorry for the issue!! It will be fixed if this pop up had gone.</p>
+            <button type="button" onclick="document.getElementById('update-popup').remove()">OK</button>
+        </div>
+    </div>
 <body>
     <div class="sky">
         <img src="media/star.png" class="falling-star" style="left: 10%;">
