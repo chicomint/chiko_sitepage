@@ -7,11 +7,24 @@
     "node": ">=22.13.0"
   },
   "scripts": {
-    "start": "node server.js",
-    "test": "node --test test/*.test.js"
+    "start": "node --env-file-if-exists=.env server.js",
+    "test": "node --test test/*.test.js",
+    "migrate": "node --env-file-if-exists=.env scripts/migrate.js",
+    "db": "node scripts/local-db.js",
+    "test:cms": "node --test test/cms.test.js",
+    "verify:migration": "node --env-file-if-exists=.env scripts/verify-migration.js"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cheerio": "^1.2.0",
+    "mongodb": "^7.7.0",
     "pngjs": "^7.0.0",
+    "sanitize-html": "^2.17.7",
+    "sharp": "^0.35.5",
     "ws": "^8.18.3"
+  },
+  "devDependencies": {
+    "mongodb-memory-server": "^11.3.0",
+    "playwright": "^1.63.0"
   }
 }

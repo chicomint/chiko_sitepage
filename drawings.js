@@ -110,20 +110,17 @@
     return true;
   }
   function addDrawing(drawing) {
-    if (!/^\d{13}-[a-f0-9]{32}\.png$/.test(drawing.filename) || displayed.has(drawing.filename)) return;
-    displayed.add(drawing.filename);
-    const link = document.createElement('a');
-    link.href = `/drawings/${drawing.filename}`;
-    link.target = '_blank';
-    link.rel = 'noopener';
-    link.dataset.filename = drawing.filename;
-    const image = new Image(640, 480);
-    image.src = link.href;
-    image.alt = `Visitor drawing sent ${new Date(drawing.createdAt).toLocaleString()}`;
-    image.loading = 'lazy';
-    link.append(image);
-    const next = [...gallery.children].find(item => item.dataset.filename < drawing.filename);
-    gallery.insertBefore(link, next || null);
+    const key = drawing._id || drawing.filename;
+    const url = drawing.image || `/drawings/${drawing.filename}`;
+    if (!key || displayed.has(key) || !/^\/(?:uploads\/[a-f0-9]{24}|drawings\/\d{13}-[a-f0-9]{32}\.png)$/.test(url)) return;
+    displayed.add(key);
+    const figure = document.createElement('figure');
+    const link = document.createElement('a'); link.href = url;
+    const image = new Image(640, 480); image.src = drawing.thumbnail || url;
+    image.alt = drawing.title || 'Visitor drawing'; image.loading = 'lazy'; link.append(image);
+    const caption = document.createElement('figcaption');
+    caption.textContent = [drawing.title, drawing.date, drawing.description].filter(Boolean).join(' · ');
+    figure.append(link, caption); gallery.append(figure);
   }
   async function loadGallery() {
     try {
@@ -131,6 +128,7 @@
       if (!response.ok) throw new Error();
       const drawings = await response.json();
       if (!Array.isArray(drawings)) throw new Error();
+      gallery.replaceChildren(); displayed.clear();
       for (const drawing of drawings) addDrawing(drawing);
       galleryStatus.textContent = displayed.size ? '' : 'No drawings yet. Leave the first one!';
     } catch { galleryStatus.textContent = "Couldn't load drawings. Please refresh to try again."; }
@@ -175,5 +173,7 @@
     }
   });
   clearCanvas();
-  loadGallery();
+  if (gallery.children.length) {
+    for (const link of gallery.querySelectorAll('a')) displayed.add(link.getAttribute('href').split('/').pop());
+  } else loadGallery();
 })();

@@ -1,0 +1,18 @@
+/* Additions reuse the site's Sakura palette, layout and showcase cards. */
+.admin-nav { padding: 1rem 0; border-bottom: 1px dashed currentColor; }
+.admin-nav form { display: inline; margin-left: 1rem; }
+.cms-form input:not([type=checkbox]), .cms-form textarea { width: 100%; }
+.cms-form textarea { min-height: 25rem; font-family: monospace; }
+.editor-toolbar { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: .8rem; }
+.editor-toolbar button { font-size: .85em; }
+.cms-row { padding: 1rem 0; border-bottom: 1px dashed currentColor; overflow-wrap: anywhere; }
+.cms-row img { max-width: 160px; max-height: 120px; }
+.cms-notice { padding: 1rem; border: 1px dashed currentColor; border-radius: 10px; }
+.blog-body { overflow-wrap: anywhere; margin: 2rem 0; }
+.blog-body img { display: block; }
+.blog-body pre { white-space: pre-wrap; }
+.blog-body video { width: 100%; }
+.drawing-gallery figure { margin: 0; }
+.drawing-gallery figcaption { font-size: .85em; }
+#preview-frame { width: 100%; height: 65vh; border: 1px dashed currentColor; background: transparent; }
+.sky { pointer-events: none; }

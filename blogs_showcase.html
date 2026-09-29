@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>chicomint'site — blogs</title>
+    <link rel="shortcut icon" type="image/x-icon" href="/media/chiki.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+
+    <link rel="stylesheet" href="/style.css?v=1.6">
+    <link rel="stylesheet" href="/sakura.css" media="screen" />
+    <link rel="stylesheet" href="/sakura-dark.css" media="screen and (prefers-color-scheme: dark)" />
+    <link rel="stylesheet" href="/cursor.css?v=3">
+
+    <script src="cursor.js?v=2" defer></script>
+    <script src="realtime.js?v=4" defer></script>
+
+    <style>
+        .blog-showcase {
+            max-width: 720px;
+            margin: 2rem auto;
+        }
+
+        .blog-showcase h2 {
+            margin-bottom: 0.4rem;
+        }
+
+        .blog-showcase .intro {
+            opacity: 0.75;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+        }
+
+        .blog-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .blog-list li {
+            margin: 0 0 0.85rem 0;
+        }
+
+        .blog-list a {
+            display: block;
+            padding: 0.9rem 1rem;
+            border: 1px dashed currentColor;
+            border-radius: 10px;
+            text-decoration: none;
+            transition: transform 0.15s ease, opacity 0.15s ease;
+        }
+
+        .blog-list a:hover,
+        .blog-list a:focus {
+            transform: translateX(5px);
+            opacity: 0.8;
+        }
+
+        .blog-date {
+            display: block;
+            font-size: 0.8rem;
+            opacity: 0.65;
+            margin-bottom: 0.2rem;
+        }
+
+        .blog-title {
+            font-size: 1.05rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sky">
+        <img src="media/star.png" class="falling-star" style="left: 10%;">
+        <img src="media/star.png" class="falling-star" style="left: 30%;">
+        <img src="media/star.png" class="falling-star" style="left: 50%;">
+        <img src="media/star.png" class="falling-star" style="left: 70%;">
+        <img src="media/star.png" class="falling-star" style="left: 90%;">
+    </div>
+
+    <h1>chicomint</h1>
+
+    <a href="/">| Homepage |</a>
+    <a href="/blogs" style="color: rgb(127, 184, 42);">blogs |</a>
+    <a href="/project">project |</a>
+    <a href="/credits">credits |</a>
+    <a href="/drawings">drawings |</a>
+    <a href="https://chicomint.atabook.org/">Guestbook |</a>
+
+    <hr>
+
+    <main class="blog-showcase">
+        <h2>Blog showcase</h2>
+        <p class="intro">Pick a post to read ✦</p>
+
+        <ul class="blog-list">
+            <li>
+                <a href="/blogs/archive">
+                    <span class="blog-date">09/25/2026</span>
+                    <span class="blog-title">Long Break, Website Updates & Chickens</span>
+                </a>
+            </li>
+
+            <!-- Add more blog titles like this:
+
+            <li>
+                <a href="/your-post-page">
+                    <span class="blog-date">MM/DD/YYYY</span>
+                    <span class="blog-title">Your Blog Title</span>
+                </a>
+            </li>
+
+            -->
+        </ul>
+    </main>
+
+    <footer>
+        <hr>
+        <p style="animation: opacityPulse 2s ease-out;
+        animation-iteration-count: infinite;
+        opacity: 1; color: rgb(81, 147, 31);">
+            @Chicomint 2022-untill i die&lt;3
+        </p>
+    </footer>
+</body>
+
+</html>

@@ -62,7 +62,7 @@ test('homepage records CSV visits by day and leaves unique visitors as live only
   const app = await fixture(t, { statsCsvPath: csv, statsOptions: { now: () => now } });
   const html = await (await fetch(app.origin)).text();
   assert.match(html, /data-presence-stat="visits"[^>]*>15,219</);
-  assert.match(html, /<dt>Uniq\. Visitors:<\/dt><dd[^>]*>live only<\/dd>/);
+  assert.match(html, /<dt>On-site:<\/dt>/);
   assert.match(html, /data-presence-stat="online"[^>]*>0</);
   const a = await app.client();
   await a.until(m => m.type === 'stats' && m.online === 1 && m.visits === 15219 && !('unique' in m));

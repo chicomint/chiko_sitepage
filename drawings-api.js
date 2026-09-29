@@ -123,7 +123,7 @@ function sanitizeAsync(buffer) {
 
 export function createDrawingsApi({ directory, allowedOrigins = [], trustedProxies = [],
   maxDrawings = 1000, maxStorageBytes = 256 * 1024 * 1024,
-  turnstileSiteKey = '', turnstileSecret = '', verifyFetch = fetch, now = Date.now } = {}) {
+  storage = null, turnstileSiteKey = '', turnstileSecret = '', verifyFetch = fetch, now = Date.now } = {}) {
   if (![maxDrawings, maxStorageBytes].every(n => Number.isSafeInteger(n) && n > 0)) throw new Error('Invalid drawing storage limits');
   if (Boolean(turnstileSiteKey) !== Boolean(turnstileSecret)) throw new Error('Both Turnstile keys are required');
   directory = resolve(directory);
@@ -230,6 +230,7 @@ export function createDrawingsApi({ directory, allowedOrigins = [], trustedProxi
         if (!['GET', 'HEAD'].includes(req.method)) { res.setHeader('Allow', 'GET, HEAD'); throw problem(405, 'Method not allowed.'); }
         const filename = path.slice('/drawings/'.length);
         if (!FILE_NAME.test(filename)) throw problem(404, 'Drawing not found.');
+        if (storage) { await storage.legacy(req, res, filename); return; }
         await checkDirectory();
         let file;
         try { file = await open(join(directory, filename), constants.O_RDONLY | constants.O_NOFOLLOW); }
@@ -255,6 +256,7 @@ export function createDrawingsApi({ directory, allowedOrigins = [], trustedProxi
         json(res, 200, { turnstileSiteKey }); return;
       }
       if (req.method === 'GET') {
+        if (storage) { json(res, 200, await storage.list()); return; }
         await checkDirectory();
         const files = await readdir(directory, { withFileTypes: true });
         const drawings = files.filter(file => file.isFile() && FILE_NAME.test(file.name))
@@ -285,6 +287,7 @@ export function createDrawingsApi({ directory, allowedOrigins = [], trustedProxi
       const body = await readBody(req);
       await challenge(req);
       const buffer = await sanitizeAsync(body);
+      if (storage) { json(res, 201, await storage.save(buffer)); return; }
       const filename = await save(buffer);
       res.setHeader('Location', `/drawings/${filename}`);
       json(res, 201, metadata(filename));

@@ -1,3 +1,9 @@
+import { canonicalPath, cleanHtml } from './cms/urls.js';
+import { connectDatabase } from './cms/database.js';
+import { createCMS } from './cms/index.js';
+import { migrate } from './cms/migration.js';
+import { layout } from './cms/views/layout.js';
+import { handleError } from './cms/http.js';
 import { createServer } from 'node:http';
 import { copyFileSync, createReadStream, existsSync, mkdirSync, readdirSync, readFileSync } from 'node:fs';
 import { dirname, resolve, extname, join } from 'node:path';
@@ -29,7 +35,7 @@ function publicFiles() {
   for (const entry of readdirSync(ROOT, { withFileTypes: true })) {
     if (entry.isFile() && !entry.name.startsWith('.') && /\.(html|css)$/.test(entry.name)) files.set('/' + entry.name, join(ROOT, entry.name));
   }
-  for (const name of ['cursor.js', 'realtime.js', 'drawings.js', 'robots.txt', 'sitemap.xml']) files.set('/' + name, join(ROOT, name));
+  for (const name of ['cursor.js', 'realtime.js', 'drawings.js', 'admin.js', 'robots.txt', 'sitemap.xml']) files.set('/' + name, join(ROOT, name));
   for (const folder of ['media', 'picture', 'd', 'math']) scan(folder);
   return files;
 }
@@ -37,15 +43,21 @@ function publicFiles() {
 export function createPresenceServer({
   allowedOrigins = [], heartbeatMs = 15000, statsCsvPath = join(ROOT, 'chicomint-stats.csv'),
   drawingsDirectory = join(ROOT, 'data/drawings'), drawingsTrustedProxies = [], drawingsOptions = {},
-  statsTrustedProxies = [], statsIpHeader = 'x-forwarded-for', statsOptions = {} } = {}) {
+  statsTrustedProxies = [], statsIpHeader = 'x-forwarded-for', statsOptions = {}, cms = null } = {}) {
   const clientIp = clientIpResolver({ trustedProxies: statsTrustedProxies, header: statsIpHeader });
   const visits = visitorStats(statsCsvPath, statsOptions);
   const identitySecret = randomBytes(32);
   const files = publicFiles();
-  const drawingsRoute = createDrawingsApi({ directory: drawingsDirectory, allowedOrigins, trustedProxies: drawingsTrustedProxies, ...drawingsOptions });
+  const drawingsRoute = createDrawingsApi({ directory: drawingsDirectory, allowedOrigins, trustedProxies: drawingsTrustedProxies, storage: cms?.visitorStorage, ...drawingsOptions });
   const online = new Map();
   let nextLabel = 1;
-  const pageName = (path) => path.endsWith('/') ? path + 'index.html' : path;
+  const pageName = path => {
+    path = canonicalPath(path);
+    if (path === '/blogs/archive') return '/all_blog.html';
+    if (path.endsWith('/')) return path + 'index.html';
+    return files.has(path + '.html') ? path + '.html' : path;
+  };
+  const publicPage = path => !path.startsWith('/admin') && path !== '/:3' && (files.has(pageName(path)) && pageName(path).endsWith('.html') || /^\/blog\/[a-z0-9-]+$/.test(path));
   const sign = (id) => createHmac('sha256', identitySecret).update(id).digest('hex');
   function identity(token) {
     if (typeof token === 'string' && /^[a-f0-9-]{36}\.[a-f0-9]{64}$/.test(token)) {
@@ -54,33 +66,47 @@ export function createPresenceServer({
     }
     return randomUUID();
   }
-  const server = createServer((req, res) => {
+  const server = createServer(async (req, res) => {
+    try {
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
     res.setHeader('X-Frame-Options', 'SAMEORIGIN');
-    let path;
-    try { path = pageName(decodeURIComponent(new URL(req.url, 'http://localhost').pathname)); }
+    let path, url;
+    try { url = new URL(req.url, 'http://localhost'); path = decodeURIComponent(url.pathname); }
     catch { res.writeHead(400).end(); return; }
     if (path === '/health') {
+      if (cms) { try { await cms.health(); } catch { res.writeHead(503).end('unavailable'); return; } }
       res.setHeader('Content-Type', 'text/plain; charset=utf-8');
       res.end('ok');
       return;
     }
+    const canonical = canonicalPath(path);
+    if (canonical !== path) { res.writeHead(301, { Location: canonical + url.search }); res.end(); return; }
+    if (path.length > 1 && path.endsWith('/') && !['/d/', '/math/'].includes(path)) { res.writeHead(301, { Location: path.slice(0, -1) + url.search }); res.end(); return; }
+    if (['/d', '/math'].includes(path)) { res.writeHead(301, { Location: path + '/' + url.search }); res.end(); return; }
+    if (req.headers.host === 'www.chiko.cc') { res.writeHead(301, { Location: 'https://chiko.cc' + path + url.search }); res.end(); return; }
+    if (cms?.matches(path)) {
+      if (['GET', 'HEAD'].includes(req.method) && !path.startsWith('/uploads') && publicPage(path)) {
+        if (visits.record(clientIp(req), req.method === 'GET')) broadcastStats();
+      }
+      await cms.route(req, res, path, url); return;
+    }
+    if (!cms && (path === '/:3' || path.startsWith('/admin') || path.startsWith('/api/admin'))) { res.writeHead(503).end('CMS is not configured.'); return; }
     if (path === '/api/drawings' || path === '/api/drawings/config' || path.startsWith('/drawings/')) {
       if (req.method === 'GET' || req.method === 'HEAD') visits.record(null, false);
       void drawingsRoute(req, res, path);
       return;
     }
     if (!['GET', 'HEAD'].includes(req.method)) { res.writeHead(405).end(); return; }
-    const file = files.get(path);
-    if (!file) { res.writeHead(404).end('Not found'); return; }
+    const file = files.get(pageName(path));
+    if (!file) { res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' }).end(layout('Not found', '<h2>Page not found</h2><a href="/">Back home</a>')); return; }
     const newVisit = visits.record(clientIp(req), req.method === 'GET' && extname(file) === '.html');
     if (newVisit) broadcastStats();
     res.setHeader('Content-Type', TYPES[extname(file)] || 'application/octet-stream');
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('Cache-Control', 'no-cache');
     if (req.method === 'HEAD') { res.end(); return; }
-    if (path === '/index.html') {
+    if (path === '/') {
       const totals = { online: online.size };
       const visitTotal = visits.counts().visits;
       if (visitTotal !== null) totals.visits = visitTotal;
@@ -89,13 +115,17 @@ export function createPresenceServer({
         html = html.replace(new RegExp(`(data-presence-stat="${name}"[^>]*>)[^<]*`),
           (_, opening) => opening + value.toLocaleString('en-US'));
       }
-      res.end(html);
+      res.end(cleanHtml(html));
       return;
     }
+    if (extname(file) === '.html') { res.end(cleanHtml(readFileSync(file, 'utf8'))); return; }
     const stream = createReadStream(file);
     stream.on('error', () => { if (!res.headersSent) res.writeHead(404); res.end(); });
     stream.pipe(res);
+    } catch (error) { handleError(req, res, error, layout); }
   });
+  server.requestTimeout = 30000;
+  server.headersTimeout = 15000;
   const wss = new WebSocketServer({ noServer: true, maxPayload: 1024, perMessageDeflate: false });
   server.on('upgrade', (req, socket, head) => {
     let originOK = false;
@@ -176,11 +206,11 @@ export function createPresenceServer({
       if (!message || typeof message !== 'object' || Array.isArray(message)) { ws.close(1008, 'Invalid message'); return; }
       if (!ws.visitor) {
         if (message.type !== 'hello' || typeof message.page !== 'string' ||
-            !files.has(pageName(message.page)) || !pageName(message.page).endsWith('.html') ||
+            !publicPage(message.page) ||
             typeof message.active !== 'boolean') { ws.close(1008, 'Invalid hello'); return; }
         const visitor = identity(message.token);
         ws.visitor = visitor;
-        ws.page = pageName(message.page);
+        ws.page = canonicalPath(message.page);
         ws.active = message.active;
         clearTimeout(helloTimeout);
         if (!online.has(visitor)) online.set(visitor, { sockets: new Set() });
@@ -253,9 +283,35 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   const statsCsvPath = process.env.STATS_CSV_PATH || (dataDirectory ? join(dataDirectory, 'chicomint-stats.csv') : join(ROOT, 'chicomint-stats.csv'));
   if (!existsSync(statsCsvPath)) {
     mkdirSync(dirname(statsCsvPath), { recursive: true });
-    copyFileSync(join(ROOT, 'chicomint-stats.csv'), statsCsvPath);
+    copyFileSync(existsSync(join(ROOT, 'legacy/visitor-stats.csv')) ? join(ROOT, 'legacy/visitor-stats.csv') : join(ROOT, 'chicomint-stats.csv'), statsCsvPath);
+  }
+  let store, cms;
+  try {
+    if (process.env.MONGODB_URI) {
+      store = await connectDatabase();
+      cms = createCMS(store);
+      const verified = await store.db.collection('migrations').findOne({ _id: 'legacy-v1' });
+      if (verified?.blogs === 35 && verified?.drawings === 8 && verified.verifiedAt) {
+        const [blogs, drawings] = await Promise.all([
+          store.db.collection('blogs').countDocuments({ legacyKey: { $exists: true } }),
+          store.db.collection('drawings').countDocuments({ legacyKey: { $exists: true } }),
+        ]);
+        if (blogs < 35 || drawings < 8) throw new Error('Verified CMS data is incomplete.');
+        console.log(JSON.stringify({ event: 'migration_already_verified', blogs, drawings }));
+      } else if (process.env.NODE_ENV === 'production') {
+        throw new Error('Production migration requires explicit verification.');
+      } else {
+        const result = await migrate(store);
+        console.log(JSON.stringify({ event: 'migration_verified', ...result }));
+      }
+    } else if (process.env.NODE_ENV === 'production') throw new Error('CMS configuration required');
+  } catch {
+    console.error('CMS startup failed. Check server configuration, database access and migration sources.');
+    await store?.close();
+    process.exit(1);
   }
   const app = createPresenceServer({
+    cms,
     statsCsvPath,
     statsTrustedProxies: (process.env.STATS_TRUSTED_PROXIES || '').split(',').map(s => s.trim()).filter(Boolean),
     statsIpHeader: process.env.STATS_IP_HEADER || 'x-forwarded-for',
@@ -271,5 +327,5 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   });
   const port = Number(process.env.PORT || 3000);
   app.server.listen(port, '0.0.0.0', () => console.log(`chicomint: http://localhost:${port}`));
-  for (const signal of ['SIGINT', 'SIGTERM']) process.once(signal, async () => { await app.close(); process.exit(0); });
+  for (const signal of ['SIGINT', 'SIGTERM']) process.once(signal, async () => { await app.close(); await store?.close(); process.exit(0); });
 }
