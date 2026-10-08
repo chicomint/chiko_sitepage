@@ -26,7 +26,14 @@ const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 
 function publicFiles() {
   const files = new Map();
   const scan = (folder) => {
-    for (const entry of readdirSync(join(ROOT, folder), { withFileTypes: true })) {
+    let entries;
+    try { entries = readdirSync(join(ROOT, folder), { withFileTypes: true }); }
+    catch (error) {
+      // Public asset folders are optional; deleted pages must not stop startup.
+      if (error.code === 'ENOENT') return;
+      throw error;
+    }
+    for (const entry of entries) {
       if (entry.name.startsWith('.')) continue;
       const relative = join(folder, entry.name);
       if (entry.isDirectory()) scan(relative);

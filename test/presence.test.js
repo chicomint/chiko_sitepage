@@ -216,11 +216,12 @@ test('bad origins, binary/oversized frames and backend file access are blocked',
   for (const path of ['/server.js', '/database.js', '/data/visitors.sqlite', '/package.json', '/.env', '/node_modules/ws/package.json', '/media/../database.js']) {
     assert.equal((await fetch(app.origin + path)).status, 404, path);
   }
-  for (const path of ['/', '/health', '/math/', '/d/', '/realtime.js', '/media/miku-miku-oo-ee-oo/Normal_96.gif']) {
+  for (const path of ['/', '/health', '/math/', '/realtime.js', '/media/miku-miku-oo-ee-oo/Normal_96.gif']) {
     const response = await fetch(app.origin + path);
     assert.equal(response.status, 200, path);
     await response.arrayBuffer();
   }
+  assert.equal((await fetch(app.origin + '/d/')).status, 404);
 });
 
 test('heartbeat removes a silently lost visitor', async t => {

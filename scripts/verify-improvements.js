@@ -171,21 +171,13 @@ try {
     return true;
   }), 'Sparse pointer movement produces a continuous brush stroke');
   await cdp.detach();
-  await page.goto(origin + '/d/'); await page.evaluate(() => window.ChikoDrawingBoard.ready);
-  await page.evaluate(() => { localStorage.setItem('unrelated-test-key', 'preserve'); });
-  const oldRect = await page.locator('#board').boundingBox(); await page.mouse.click(oldRect.x + 50, oldRect.y + 50);
-  page.once('dialog', dialog => dialog.dismiss()); await page.locator('#floatingButton').click();
-  check(await page.evaluate(() => window.ChikoDrawingBoard.exportCanvas().getContext('2d').getImageData(0, 0, 640, 480).data.some((v, i) => i % 4 === 3 && v)), 'Fullscreen clear cancellation preserves artwork');
-  page.once('dialog', dialog => dialog.accept()); await page.locator('#floatingButton').click();
-  check(await page.evaluate(() => { const d = document.querySelector('#board').getContext('2d').getImageData(0, 0, 640, 480).data; return !d.some((v, i) => i % 4 === 3 && v); }), 'Original circular control clears artwork');
-  check(await page.evaluate(() => localStorage.getItem('unrelated-test-key')) === 'preserve', 'Circular clear preserves unrelated stored data');
-  await page.screenshot({ path: 'artifacts/improvements/fullscreen-desktop.png', fullPage: true });
+  check((await fetch(origin + '/d/', { redirect: 'manual' })).status === 404, 'Deleted fullscreen page returns 404 without crashing the site');
   await store.db.collection('comments').deleteMany({ username: 'Local pagination fixture' });
   const mobile = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2, colorScheme: 'dark' });
   const phone = await mobile.newPage(); await setupPage(phone);
-  for (const [path, name] of [['/', 'home-mobile'], [new URL(postUrl).pathname, 'comments-mobile'], ['/drawings', 'drawing-mobile'], ['/d/', 'fullscreen-mobile']]) {
+  for (const [path, name] of [['/', 'home-mobile'], [new URL(postUrl).pathname, 'comments-mobile'], ['/drawings', 'drawing-mobile']]) {
     await phone.goto(origin + path, { waitUntil: 'domcontentloaded' });
-    if (path === '/drawings' || path === '/d/') await phone.evaluate(() => window.ChikoDrawingBoard.ready);
+    if (path === '/drawings') await phone.evaluate(() => window.ChikoDrawingBoard.ready);
     check(await phone.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), name + ' has no horizontal overflow');
     await phone.screenshot({ path: 'artifacts/improvements/' + name + '.png', fullPage: true });
   }

@@ -52,7 +52,8 @@ test('CMS integration: migration, CRUD, sessions, uploads, redirects and persist
      assert.ok(renderBBCode(row.content));
    }
    await start();
-   for(const path of ['/','/blogs','/blogs/archive','/project','/credits','/drawings','/math/','/d/','/:3','/health']) assert.equal((await request(path)).status,200,path);
+   for(const path of ['/','/blogs','/blogs/archive','/project','/credits','/drawings','/math/','/:3','/health']) assert.equal((await request(path)).status,200,path);
+   assert.equal((await request('/d/')).status,404);
    for(const [old,canonical] of [['/index.html','/'],['/blogs.html','/blogs'],['/blogs_showcase.html','/blogs'],['/all_blog.html','/blogs/archive'],['/drawings.html','/drawings'],['/project.html','/project'],['/credits.html','/credits'],['/math/index.html','/math/']]) { const r=await request(old); assert.equal(r.status,301); assert.equal(r.headers.get('location'),canonical); }
    assert.equal((await request('/admin')).headers.get('location'),'/:3');
    assert.equal((await post('/api/admin/uploads')).status,401);
