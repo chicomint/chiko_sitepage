@@ -1,3 +1,4 @@
+import { commentRoutes } from './comments.js';
 import { adminRoutes } from './routes/admin.js';
 import { publicRoutes } from './routes/public.js';
 import { serveImage, storeImage } from './uploads.js';
@@ -5,12 +6,13 @@ import { handleError, redirect, problem } from './http.js';
 import { layout } from './views/layout.js';
 import { live, visible } from './models.js';
 export function createCMS(store, env = process.env) {
-  const admin = adminRoutes(store, env), publicRoute = publicRoutes(store);
+  const admin = adminRoutes(store, env), publicRoute = publicRoutes(store), comments = commentRoutes(store, env);
   return {
     store,
-    matches: path => path === '/:3' || path === '/admin' || path.startsWith('/admin/') || path.startsWith('/api/admin/') || path === '/blogs' || path === '/blogs/archive' || path.startsWith('/blog/') || path === '/drawings' || path.startsWith('/uploads/'),
+    matches: path => path === '/:3' || path === '/admin' || path.startsWith('/admin/') || path.startsWith('/api/admin/') || path === '/blogs' || path === '/blogs/archive' || path.startsWith('/blog/') || path === '/drawings' || path.startsWith('/api/comments/') || path.startsWith('/uploads/'),
     async route(req, res, path, url) {
       try {
+        if (path.startsWith('/api/comments/')) return await comments(req, res, path, url);
         if (path === '/:3' || path.startsWith('/admin') || path.startsWith('/api/admin/')) return await admin(req, res, path, url);
         if (path.startsWith('/uploads/')) {
           if (!['GET', 'HEAD'].includes(req.method)) throw problem(405, 'Method not allowed.');

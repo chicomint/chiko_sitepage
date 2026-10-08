@@ -336,6 +336,27 @@ user {
 .drawing-tools button[aria-pressed="true"] { outline: 1px solid currentColor; outline-offset: 2px; }
 .drawing-tools button:disabled { opacity: 0.6; }
 
+/* A small presence line, using the existing page typography. */
+.discord-status { display: block; margin: 12px 0; font-size: .8em; line-height: 1.5; }
+.discord-dot { display: inline-block; width: 8px; height: 8px; background: #666; vertical-align: middle; border: 1px solid currentColor; }
+.discord-status[data-status=online] .discord-dot { background: #43b581; }
+.discord-status[data-status=idle] .discord-dot { background: #faa61a; }
+.discord-status[data-status=dnd] .discord-dot { background: #f04747; }
+.discord-status[data-status=offline] .discord-dot { background: #222; }
+.discord-duration { opacity: .8; }
+
+.drawing-layer-panel { width: 100%; max-width: 640px; font-size: .8em; border: 1px solid #777; padding: 6px; box-sizing: border-box; }
+.drawing-layer-panel summary { font-weight: bold; }
+#drawing-layers { display: flex; flex-wrap: wrap; gap: 4px 10px; margin: 5px 0; }
+.drawing-layer { display: flex; align-items: center; gap: 4px; }
+.drawing-layer input, .drawing-layer button { margin: 0; }
+.drawing-layer button { padding: 2px 6px; }
+.drawing-layer button[aria-pressed=true] { outline: 1px solid currentColor; outline-offset: 1px; }
+.drawing-layer-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; }
+.drawing-layer-actions button, .drawing-layer-actions label, .drawing-layer-actions input { margin: 0; }
+.layer-rename { display: flex; align-items: center; gap: 4px; font-weight: normal; }
+.layer-rename input { width: 100px; padding: 2px 4px; border-radius: 0; }
+
 .drawing-gallery {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr));
@@ -351,3 +372,6 @@ user {
   margin: 0;
   background: #fff;
 }
+
+.drawing-gallery figure { margin: 0; }
+.drawing-gallery figcaption { font-size: .75em; margin-top: 4px; }

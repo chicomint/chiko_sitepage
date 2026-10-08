@@ -23,8 +23,8 @@
   position: fixed;
   top: 0;
   left: 0;
-  width: 96px;
-  height: 96px;
+  width: 32px;
+  height: 32px;
   z-index: 2147483646;
   pointer-events: none;
   user-select: none;
@@ -37,8 +37,9 @@
 
 .remote-cursor img {
   display: block;
-  width: 96px;
-  height: 96px;
+  width: 32px;
+  height: 32px;
+  image-rendering: pixelated;
   max-width: none;
   margin: 0;
   padding: 0;
@@ -47,8 +48,8 @@
 
 .remote-cursor span {
   position: absolute;
-  top: 20px;
-  left: 16px;
+  top: 24px;
+  left: 8px;
   padding: 0 2px;
   color: #51931f;
   background: #f9f9f9;
@@ -63,7 +64,7 @@
 
 html,
 body {
-  cursor: url("media/miku-miku-oo-ee-oo/Normal.cur") 0 0, auto;
+  cursor: url("media/miku-miku-oo-ee-oo/Normal_32.png") 0 0, auto;
 }
 
 a[href],
@@ -74,22 +75,23 @@ input[type="submit"],
 input[type="reset"],
 select,
 summary {
-  cursor: url("media/miku-miku-oo-ee-oo/Normal.cur") 0 0, pointer;
+  cursor: url("media/miku-miku-oo-ee-oo/Link_32.png") 7 0, pointer;
 }
 
 button:disabled,
 input:disabled,
 select:disabled,
 textarea:disabled {
-  cursor: url("media/miku-miku-oo-ee-oo/NotAllowed.cur") 15 15, not-allowed;
+  cursor: url("media/miku-miku-oo-ee-oo/NotAllowed_32.png") 15 15, not-allowed;
 }
 
 #miku-cursor {
   position: fixed;
   top: 0;
   left: 0;
-  width: 96px;
-  height: 96px;
+  width: 32px;
+  height: 32px;
+  image-rendering: pixelated;
   max-width: none;
   margin: 0;
   padding: 0;
@@ -109,3 +111,9 @@ textarea:disabled {
     visibility: visible;
   }
 }
+
+@media (any-pointer: coarse) and (hover: none) {
+  html, body, a[href], button, input, select, textarea { cursor: auto; }
+  #miku-cursor, .remote-cursor { display: none; }
+}
+html.miku-cursor-active canvas { cursor: crosshair !important; }

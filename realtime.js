@@ -3,8 +3,8 @@
   const presenceOnly = script.hasAttribute('data-presence-only');
   const endpoint = new URL('/presence', location.href);
   endpoint.protocol = endpoint.protocol === 'https:' || endpoint.protocol === 'wss:' ? 'wss:' : 'ws:';
-  const asset = new URL('media/miku-miku-oo-ee-oo/Normal_96.gif', script.src);
-  const still = new URL('media/miku-miku-oo-ee-oo/Normal_96-static.png', script.src);
+  const asset = new URL('media/miku-miku-oo-ee-oo/Normal_32.gif', script.src);
+  const still = new URL('media/miku-miku-oo-ee-oo/Normal_32.png', script.src);
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
   const mouse = matchMedia('(any-hover: hover) and (any-pointer: fine)');
   const peers = new Map();
@@ -43,7 +43,7 @@
       const element = document.createElement('div');
       element.className = 'remote-cursor';
       element.setAttribute('aria-hidden', 'true');
-      const image = new Image(96, 96);
+      const image = new Image(32, 32);
       image.alt = '';
       image.draggable = false;
       image.src = reducedMotion.matches ? still.href : asset.href;
@@ -108,6 +108,7 @@
   }
   document.addEventListener('pointermove', (event) => {
     if (presenceOnly || event.pointerType !== 'mouse' || !mouse.matches || !active() || !ready) return;
+    if (event.target.closest('canvas, iframe, input, textarea, select, [contenteditable]')) { hideCursor(); return; }
     pending = { x: event.clientX / innerWidth, y: event.clientY / innerHeight };
     if (!movementTimer) movementTimer = setTimeout(flushCursor, Math.max(0, 33 - (performance.now() - lastSent)));
   }, { passive: true });

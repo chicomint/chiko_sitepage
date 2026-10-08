@@ -1,3 +1,4 @@
+import { createDiscordTracker } from './discord-presence.js';
 import { canonicalPath, cleanHtml } from './cms/urls.js';
 import { connectDatabase } from './cms/database.js';
 import { createCMS } from './cms/index.js';
@@ -35,7 +36,7 @@ function publicFiles() {
   for (const entry of readdirSync(ROOT, { withFileTypes: true })) {
     if (entry.isFile() && !entry.name.startsWith('.') && /\.(html|css)$/.test(entry.name)) files.set('/' + entry.name, join(ROOT, entry.name));
   }
-  for (const name of ['cursor.js', 'realtime.js', 'drawings.js', 'admin.js', 'robots.txt', 'sitemap.xml']) files.set('/' + name, join(ROOT, name));
+  for (const name of ['cursor.js', 'realtime.js', 'drawings.js', 'drawing-board.js', 'comments.js', 'discord-status.js', 'admin.js', 'robots.txt', 'sitemap.xml']) files.set('/' + name, join(ROOT, name));
   for (const folder of ['media', 'picture', 'd', 'math']) scan(folder);
   return files;
 }
@@ -43,13 +44,14 @@ function publicFiles() {
 export function createPresenceServer({
   allowedOrigins = [], heartbeatMs = 15000, statsCsvPath = join(ROOT, 'chicomint-stats.csv'),
   drawingsDirectory = join(ROOT, 'data/drawings'), drawingsTrustedProxies = [], drawingsOptions = {},
-  statsTrustedProxies = [], statsIpHeader = 'x-forwarded-for', statsOptions = {}, cms = null } = {}) {
+  statsTrustedProxies = [], statsIpHeader = 'x-forwarded-for', statsOptions = {}, cms = null, discord = null } = {}) {
   const clientIp = clientIpResolver({ trustedProxies: statsTrustedProxies, header: statsIpHeader });
   const visits = visitorStats(statsCsvPath, statsOptions);
   const identitySecret = randomBytes(32);
   const files = publicFiles();
   const drawingsRoute = createDrawingsApi({ directory: drawingsDirectory, allowedOrigins, trustedProxies: drawingsTrustedProxies, storage: cms?.visitorStorage, ...drawingsOptions });
   const online = new Map();
+  const discordClients = new Set();
   let nextLabel = 1;
   const pageName = path => {
     path = canonicalPath(path);
@@ -80,6 +82,22 @@ export function createPresenceServer({
       res.end('ok');
       return;
     }
+    if (path === '/api/discord/status' || path === '/api/discord/events') {
+      if (req.method !== 'GET') { res.writeHead(405).end(); return; }
+      const snapshot = () => discord?.snapshot() || { available: false, status: null, since: null, serverNow: Date.now() };
+      if (path.endsWith('/status')) { res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }); res.end(JSON.stringify(snapshot())); return; }
+      if (discordClients.size >= 250) { res.writeHead(503).end(); return; }
+      discordClients.add(res);
+      res.writeHead(200, { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-store', 'X-Accel-Buffering': 'no' });
+      const sendStatus = data => { if (res.writableLength > 65536) res.destroy(); else res.write('data: ' + JSON.stringify(data) + '\n\n'); };
+      sendStatus(snapshot());
+      const unsubscribe = discord?.subscribe(sendStatus);
+      const keepalive = setInterval(() => sendStatus(snapshot()), 20000);
+      res.on('close', () => { clearInterval(keepalive); unsubscribe?.(); discordClients.delete(res); });
+      return;
+    }
+    // Retire the old board URL. The query bypasses its cached inverse redirect.
+    if (path === '/b') { res.writeHead(302, { Location: '/drawings?restored=1', 'Cache-Control': 'no-store' }); res.end(); return; }
     const canonical = canonicalPath(path);
     if (canonical !== path) { res.writeHead(301, { Location: canonical + url.search }); res.end(); return; }
     if (path.length > 1 && path.endsWith('/') && !['/d/', '/math/'].includes(path)) { res.writeHead(301, { Location: path.slice(0, -1) + url.search }); res.end(); return; }
@@ -267,6 +285,8 @@ export function createPresenceServer({
   }, heartbeatMs);
   return { server, wss, async close() {
     clearInterval(heartbeat);
+    for (const client of discordClients) client.end();
+    await discord?.close();
     const closed = new Promise((done) => wss.close(done));
     for (const ws of wss.clients) ws.terminate();
     await closed;
@@ -310,8 +330,9 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
     await store?.close();
     process.exit(1);
   }
+  const discord = store ? await createDiscordTracker({ db: store.db }) : null;
   const app = createPresenceServer({
-    cms,
+    cms, discord,
     statsCsvPath,
     statsTrustedProxies: (process.env.STATS_TRUSTED_PROXIES || '').split(',').map(s => s.trim()).filter(Boolean),
     statsIpHeader: process.env.STATS_IP_HEADER || 'x-forwarded-for',

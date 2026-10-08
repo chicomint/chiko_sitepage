@@ -8,9 +8,9 @@ export const field = (name, value = '', type = 'text', required = false) => `<la
 export const csrfField = session => `<input type="hidden" name="csrf" value="${e(session.csrf)}">`;
 export function layout(title, content, session = null) {
   const prefix = head.replace(/<title>[^]*?<\/title>/, `<title>${e(title)} · chicomint</title>`)
-    .replace('</head>', '<link rel="stylesheet" href="/cms.css"><script src="/admin.js" defer></script></head>')
+    .replace('</head>', '<link rel="stylesheet" href="/cms.css"><link rel="stylesheet" href="/comments.css?v=3"><script src="/comments.js?v=3" defer></script><script src="/admin.js" defer></script></head>')
     .replace(/<script src="\/(?:realtime|cursor)\.js[^]*?<\/script>/g, match => session ? '' : match);
-  const nav = session?.authenticated ? `<nav class="admin-nav" aria-label="Admin"><a href="/admin">Dashboard</a> · <a href="/admin/blogs">Blogs</a> · <a href="/admin/blogs/new">New Blog</a> · <a href="/admin/drawings">Drawings</a> · <a href="/admin/uploads">Uploads</a><form action="/admin/logout" method="post">${csrfField(session)}<button>Logout</button></form></nav>` : '';
+  const nav = session?.authenticated ? `<nav class="admin-nav" aria-label="Admin"><a href="/admin">Dashboard</a> · <a href="/admin/blogs">Blogs</a> · <a href="/admin/blogs/new">New Blog</a> · <a href="/admin/drawings">Drawings</a> · <a href="/admin/uploads">Uploads</a> · <a href="/admin/comments">Comments</a><form action="/admin/logout" method="post">${csrfField(session)}<button>Logout</button></form></nav>` : '';
   return prefix + nav + `<main>${content}</main>` + footer;
 }
 export const dateLabel = date => { const [y, m, d] = date.split('-'); return `${m}/${d}/${y}`; };

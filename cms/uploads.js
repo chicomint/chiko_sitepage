@@ -38,6 +38,7 @@ export async function serveImage(store, req, res, value) {
   if (file.metadata?.visitorDrawing) {
     if (!await store.db.collection('drawings').findOne({ image: `/uploads/${_id}`, ...visible })) throw problem(404, 'Image not found.');
   }
+  if (file.metadata?.commentAvatar) throw problem(404, 'Image not found.');
   res.writeHead(200, { 'Content-Type': file.metadata.mime, 'Content-Length': file.length, 'Cache-Control': 'public, max-age=300', 'Content-Disposition': 'inline', 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "default-src 'none'; sandbox" });
   if (req.method === 'HEAD') { res.end(); return; }
   const stream = store.bucket.openDownloadStream(_id);

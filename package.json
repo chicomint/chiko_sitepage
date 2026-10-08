@@ -12,7 +12,8 @@
     "migrate": "node --env-file-if-exists=.env scripts/migrate.js",
     "db": "node scripts/local-db.js",
     "test:cms": "node --test test/cms.test.js",
-    "verify:migration": "node --env-file-if-exists=.env scripts/verify-migration.js"
+    "verify:migration": "node --env-file-if-exists=.env scripts/verify-migration.js",
+    "check": "node scripts/check.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

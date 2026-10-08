@@ -52,7 +52,7 @@ test('PNG validation rejects blank, transparent, corrupt, oversized, and wrong-s
   assert.throws(() => sanitizeDrawing(Buffer.concat([png(), Buffer.from('<script>bad()</script>')])), error => error.status === 400);
   assert.throws(() => sanitizeDrawing(Buffer.from('not a PNG')), error => error.status === 400);
   const clean = PNG.sync.read(sanitizeDrawing(png({ transparent: true })));
-  assert.deepEqual([...clean.data.subarray(0, 4)], [255, 255, 255, 255]);
+  assert.deepEqual([...clean.data.subarray(0, 4)], [0, 0, 0, 0]);
   assert.equal(clean.width, 640);
   assert.equal(clean.height, 480);
 });

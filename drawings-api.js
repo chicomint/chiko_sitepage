@@ -63,17 +63,12 @@ export function sanitizeDrawing(buffer) {
   catch { throw problem(400, 'Invalid PNG drawing.'); }
   let marked = false;
   for (let i = 0; i < image.data.length; i += 4) {
-    const alpha = image.data[i + 3] / 255;
-    for (let channel = 0; channel < 3; channel++) {
-      const value = Math.round(image.data[i + channel] * alpha + 255 * (1 - alpha));
-      image.data[i + channel] = value;
-      if (value !== 255) marked = true;
-    }
-    image.data[i + 3] = 255;
+    if (image.data[i + 3] && (image.data[i] !== 255 || image.data[i + 1] !== 255 || image.data[i + 2] !== 255)) marked = true;
+    if (!image.data[i + 3]) image.data.fill(0, i, i + 4);
   }
   if (!marked) throw problem(400, 'Draw something before sending.');
-  // Encode only decoded pixels: no client metadata, appended files, or transparency.
-  return PNG.sync.write({ width: DRAWING_WIDTH, height: DRAWING_HEIGHT, data: image.data }, { colorType: 2 });
+  // Strip metadata and appended content while retaining layer transparency.
+  return PNG.sync.write({ width: DRAWING_WIDTH, height: DRAWING_HEIGHT, data: image.data }, { colorType: 6 });
 }
 
 function readBody(req) {

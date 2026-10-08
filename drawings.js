@@ -1,22 +1,19 @@
 (() => {
-  const canvas = document.getElementById('drawing-canvas');
-  const context = canvas.getContext('2d', { willReadFrequently: true });
-  const color = document.getElementById('drawing-color');
-  const size = document.getElementById('drawing-size');
-  const draw = document.getElementById('drawing-draw');
-  const erase = document.getElementById('drawing-erase');
-  const clear = document.getElementById('drawing-clear');
+  'use strict';
+  const location = new URL(window.location.href);
+  if (location.pathname === '/drawings' && location.searchParams.get('restored') === '1') {
+    location.searchParams.delete('restored');
+    history.replaceState(history.state, '', location.pathname + location.search + location.hash);
+  }
+  const board = window.ChikoDrawingBoard;
+  const canvas = board.canvas;
   const send = document.getElementById('drawing-send');
   const status = document.getElementById('drawing-status');
   const gallery = document.getElementById('drawing-gallery');
   const galleryStatus = document.getElementById('drawing-gallery-status');
-  const controls = document.querySelectorAll('.drawing-tools input, .drawing-tools button');
   const displayed = new Set();
-  let erasing = false;
-  let pointer = null;
-  let previous;
+  const controls = document.querySelectorAll('.drawing-tools input, .drawing-tools button, .drawing-layer-actions input');
   let busy = false;
-
   let challengeWidget;
   let challengeToken = '';
   const challengeReady = fetch('/api/drawings/config').then(async response => {
@@ -41,77 +38,14 @@
   });
   challengeReady.catch(error => { status.textContent = error.message; });
 
-  function clearCanvas() {
-    context.fillStyle = '#ffffff';
-    context.fillRect(0, 0, canvas.width, canvas.height);
-    status.textContent = '';
-  }
-  function selectTool(value) {
-    erasing = value;
-    draw.setAttribute('aria-pressed', String(!value));
-    erase.setAttribute('aria-pressed', String(value));
-  }
-  function point(event) {
-    const rect = canvas.getBoundingClientRect();
-    return {
-      x: (event.clientX - rect.left - canvas.clientLeft) * canvas.width / canvas.clientWidth,
-      y: (event.clientY - rect.top - canvas.clientTop) * canvas.height / canvas.clientHeight,
-    };
-  }
-  function stroke(event) {
-    const next = point(event);
-    context.strokeStyle = erasing ? '#ffffff' : color.value;
-    context.lineWidth = Number(size.value);
-    context.lineCap = 'round';
-    context.lineJoin = 'round';
-    context.beginPath();
-    context.moveTo(previous.x, previous.y);
-    context.lineTo(next.x, next.y);
-    context.stroke();
-    previous = next;
-  }
-  canvas.addEventListener('pointerdown', event => {
-    if (busy || pointer !== null || event.button !== 0) return;
-    event.preventDefault();
-    pointer = event.pointerId;
-    canvas.setPointerCapture(pointer);
-    previous = point(event);
-    context.fillStyle = erasing ? '#ffffff' : color.value;
-    context.beginPath();
-    context.arc(previous.x, previous.y, Number(size.value) / 2, 0, Math.PI * 2);
-    context.fill();
-    status.textContent = '';
-  });
-  canvas.addEventListener('pointermove', event => {
-    if (event.pointerId !== pointer) return;
-    const points = event.getCoalescedEvents?.();
-    for (const sample of points?.length ? points : [event]) stroke(sample);
-  });
-  function endStroke(event) {
-    if (event.pointerId !== pointer) return;
-    if (event.type === 'pointerup') stroke(event);
-    pointer = null;
-    if (canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
-  }
-  canvas.addEventListener('pointerup', endStroke);
-  canvas.addEventListener('pointercancel', endStroke);
-  canvas.addEventListener('lostpointercapture', endStroke);
-  draw.addEventListener('click', () => selectTool(false));
-  erase.addEventListener('click', () => selectTool(true));
-  clear.addEventListener('click', clearCanvas);
-  color.addEventListener('input', () => selectTool(false));
-  size.addEventListener('input', () => { document.getElementById('drawing-size-value').value = size.value; });
-
-  function blank() {
-    const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
-    for (let i = 0; i < pixels.length; i += 4) {
-      if (pixels[i] !== 255 || pixels[i + 1] !== 255 || pixels[i + 2] !== 255) return false;
-    }
+  function blank(image) {
+    const pixels = image.getContext('2d').getImageData(0, 0, image.width, image.height).data;
+    for (let i = 0; i < pixels.length; i += 4) if (pixels[i + 3] && (pixels[i] !== 255 || pixels[i + 1] !== 255 || pixels[i + 2] !== 255)) return false;
     return true;
   }
   function addDrawing(drawing) {
     const key = drawing._id || drawing.filename;
-    const url = drawing.image || `/drawings/${drawing.filename}`;
+    const url = drawing.image || drawing.url || `/drawings/${drawing.filename}`;
     if (!key || displayed.has(key) || !/^\/(?:uploads\/[a-f0-9]{24}|drawings\/\d{13}-[a-f0-9]{32}\.png)$/.test(url)) return;
     displayed.add(key);
     const figure = document.createElement('figure');
@@ -119,8 +53,11 @@
     const image = new Image(640, 480); image.src = drawing.thumbnail || url;
     image.alt = drawing.title || 'Visitor drawing'; image.loading = 'lazy'; link.append(image);
     const caption = document.createElement('figcaption');
-    caption.textContent = [drawing.title, drawing.date, drawing.description].filter(Boolean).join(' · ');
-    figure.append(link, caption); gallery.append(figure);
+    const date = drawing.date || drawing.createdAt;
+    const time = document.createElement('time'); time.dateTime = date || '';
+    time.textContent = date ? new Date(date.length === 10 ? date + 'T00:00:00' : date).toLocaleDateString() : '';
+    caption.append(time);
+    figure.append(link, caption); gallery.prepend(figure);
   }
   async function loadGallery() {
     try {
@@ -129,20 +66,21 @@
       const drawings = await response.json();
       if (!Array.isArray(drawings)) throw new Error();
       gallery.replaceChildren(); displayed.clear();
-      for (const drawing of drawings) addDrawing(drawing);
+      for (const drawing of [...drawings].reverse()) addDrawing(drawing);
       galleryStatus.textContent = displayed.size ? '' : 'No drawings yet. Leave the first one!';
     } catch { galleryStatus.textContent = "Couldn't load drawings. Please refresh to try again."; }
   }
   send.addEventListener('click', async () => {
-    if (busy) return;
-    if (blank()) { status.textContent = 'Draw something before sending.'; return; }
-    busy = true;
+    if (busy || board.isBusy()) return;
+    const image = board.exportCanvas();
+    if (blank(image)) { status.textContent = 'Draw something before sending.'; return; }
+    busy = true; board.setBusy(true);
     for (const control of controls) control.disabled = true;
     status.textContent = 'Sending...';
     try {
       await challengeReady;
       if (challengeWidget !== undefined && !challengeToken) throw new Error('Please complete the drawing challenge.');
-      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+      const blob = await new Promise(resolve => image.toBlob(resolve, 'image/png'));
       if (!blob) throw new Error("Couldn't create the drawing image.");
       if (blob.size > 2 * 1024 * 1024) throw new Error('Drawing is too large (maximum 2 MiB).');
       const response = await fetch('/api/drawings', {
@@ -170,9 +108,9 @@
       if (challengeWidget !== undefined) { challengeToken = ''; window.turnstile.reset(challengeWidget); }
       busy = false;
       for (const control of controls) control.disabled = false;
+      board.setBusy(false);
     }
   });
-  clearCanvas();
   if (gallery.children.length) {
     for (const link of gallery.querySelectorAll('a')) displayed.add(link.getAttribute('href').split('/').pop());
   } else loadGallery();

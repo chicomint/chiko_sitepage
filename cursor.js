@@ -1,8 +1,9 @@
 (() => {
-  const asset = new URL('media/miku-miku-oo-ee-oo/Normal_96.gif', document.currentScript.src);
+  const asset = new URL('media/miku-miku-oo-ee-oo/Normal_32.gif', document.currentScript.src);
+  const linkAsset = new URL('media/miku-miku-oo-ee-oo/Link_32.gif', document.currentScript.src);
   const enabled = matchMedia('(any-hover: hover) and (any-pointer: fine) and (prefers-reduced-motion: no-preference)');
   const root = document.documentElement;
-  const cursor = new Image(96, 96);
+  const cursor = new Image(32, 32);
   cursor.id = 'miku-cursor';
   cursor.alt = '';
   cursor.setAttribute('aria-hidden', 'true');
@@ -22,7 +23,10 @@
       hide();
       return;
     }
-    cursor.style.transform = `translate3d(${event.clientX}px, ${event.clientY}px, 0)`;
+    const hover = event.target.closest('a[href], button, [role=button], summary');
+    const source = hover ? linkAsset.href : asset.href;
+    if (cursor.src !== source) cursor.src = source;
+    cursor.style.transform = `translate3d(${event.clientX - (hover ? 7 : 0)}px, ${event.clientY}px, 0)`;
     root.classList.add('miku-cursor-active');
   }, { passive: true });
 

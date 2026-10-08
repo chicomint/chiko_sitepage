@@ -16,3 +16,8 @@
 .drawing-gallery figcaption { font-size: .85em; }
 #preview-frame { width: 100%; height: 65vh; border: 1px dashed currentColor; background: transparent; }
 .sky { pointer-events: none; }
+
+.cms-row form { display: inline; }
+.moderation-message { white-space: pre-wrap; overflow-wrap: anywhere; }
+.blog-list a { border-radius: 0; transition: none; }
+.blog-list a:hover, .blog-list a:focus { transform: none; }

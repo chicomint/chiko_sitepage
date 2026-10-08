@@ -50,6 +50,18 @@ export function adminRoutes(store, env) {
       const [blogs, drawings, count] = await Promise.all([db.collection('blogs').countDocuments(live), db.collection('drawings').countDocuments(live), db.collection('images.files').countDocuments({ 'metadata.archived': { $ne: true } })]);
       return send(res, 200, views.dashboard(session, { blogs, drawings, uploads: count }));
     }
+    if (path === '/admin/comments' && !data) {
+      const page = Math.max(1, Math.min(10000, parseInt(url.searchParams.get('page'), 10) || 1));
+      const items = await db.collection('comments').find(live).sort({ _id: -1 }).skip((page - 1) * 50).limit(51).toArray();
+      const posts = await db.collection('blogs').find({ _id: { $in: items.map(c => c.blogId) } }).toArray();
+      return send(res, 200, views.commentsPage(session, items.slice(0, 50), posts, page, items.length > 50));
+    }
+    const commentAction = path.match(/^\/admin\/comments\/([a-f0-9]{24})\/(hide|show|delete)$/);
+    if (commentAction && data) {
+      const result = await db.collection('comments').updateOne({ _id: id(commentAction[1]), ...live }, { $set: commentAction[2] === 'delete' ? { deletedAt: new Date(), hidden: true } : { hidden: commentAction[2] === 'hide' } });
+      if (!result.matchedCount) throw problem(404, 'Comment not found.');
+      return redirect(res, '/admin/comments');
+    }
     const match = path.match(/^\/admin\/(blogs|drawings|uploads)(?:\/(new|[a-f0-9]{24})(\/delete)?)?$/);
     if (!match) throw problem(404, 'Page not found.');
     const [, type, key, deleting] = match;

@@ -1,3 +1,4 @@
+import { commentList } from '../comments.js';
 import { visible } from '../models.js';
 import { send, redirect, problem } from '../http.js';
 import { blogList, blogPage, archivePage, drawingsPage } from '../views/public.js';
@@ -13,7 +14,7 @@ export function publicRoutes(store) {
     if (path === '/drawings') return send(res, 200, drawingsPage(await store.db.collection('drawings').find(visible).sort({ order: 1, date: -1, createdAt: -1 }).limit(1000).toArray()));
     const slug = path.slice('/blog/'.length);
     const post = await store.db.collection('blogs').findOne({ slug, ...visible });
-    if (post) return send(res, 200, blogPage(post));
+    if (post) return send(res, 200, blogPage(post, await commentList(store.db, post._id)));
     const history = await store.db.collection('slugHistory').findOne({ slug });
     const moved = history && await store.db.collection('blogs').findOne({ _id: history.blogId, ...visible });
     if (moved) return redirect(res, '/blog/' + moved.slug, 301);

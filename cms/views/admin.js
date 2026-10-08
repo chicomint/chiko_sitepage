@@ -16,3 +16,11 @@ export const confirmDelete = (session, type, item) => layout('Confirm deletion',
 export function uploadsPage(session, files, page, more) {
   return layout('Uploads', `<h2>Uploads</h2><form id="upload-form">${csrfField(session)}<label>Choose an image (JPEG, PNG, WebP, GIF; max 10 MiB)<input type="file" id="image-upload" accept="image/jpeg,image/png,image/webp,image/gif"></label></form><p id="upload-status" role="status"></p>${files.map(f => `<div class="cms-row"><img src="/uploads/${f._id}" alt="${e(f.metadata?.originalName || '')}" loading="lazy"><p>${e(f.metadata?.originalName || f.filename)}</p><label>Image URL<input readonly value="/uploads/${f._id}"></label><a href="/admin/uploads/${f._id}/delete">Remove from library</a></div>`).join('')}${page > 1 ? `<a href="?page=${page - 1}">Previous</a>` : ''} ${more ? `<a href="?page=${page + 1}">Next</a>` : ''}`, session);
 }
+
+export function commentsPage(session, items, posts, page, more) {
+  const titles = new Map(posts.map(post => [String(post._id), post]));
+  return layout('Comments', `<h2>Comments</h2>${items.length ? '' : '<p>No comments.</p>'}${items.map(c => {
+    const post = titles.get(String(c.blogId));
+    return `<div class="cms-row"><strong>${e(c.username)}</strong> · ${e(new Date(c.createdAt).toISOString())} · ${c.hidden ? 'Hidden / awaiting approval' : 'Visible'}${post ? ` · <a href="/blog/${e(post.slug)}">${e(post.title)}</a>` : ''}<p class="moderation-message">${e(c.message)}</p><form method="post" action="/admin/comments/${c._id}/${c.hidden ? 'show' : 'hide'}">${csrfField(session)}<button>${c.hidden ? 'Approve / show' : 'Hide'}</button></form> <form method="post" action="/admin/comments/${c._id}/delete">${csrfField(session)}<button>Delete comment</button></form></div>`;
+  }).join('')}${page > 1 ? `<a href="?page=${page - 1}">Previous</a>` : ''} ${more ? `<a href="?page=${page + 1}">Next</a>` : ''}`, session);
+}

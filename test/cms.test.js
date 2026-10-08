@@ -85,7 +85,9 @@ test('CMS integration: migration, CRUD, sessions, uploads, redirects and persist
    assert.equal((await post('/admin/blogs/'+blog._id,{...draft,slug:'edited-blog'})).status,303);assert.equal((await request('/blog/edited-blog')).status,404);
    const drawing={title:'Test drawing',date:'2026-09-28',image:image.url,description:'Caption <script>x</script>',order:'2',published:'on'};
    assert.equal((await post('/admin/drawings/new',drawing)).status,303);const row=await store.db.collection('drawings').findOne({title:drawing.title});
-   assert.ok((await (await request('/drawings')).text()).includes('Test drawing'));
+   assert.match(await (await request('/drawings')).text(), /Other people's drawings/);
+   assert.equal((await request('/b')).status,302);
+   assert.ok((await (await request('/api/drawings')).json()).some(d => d.title === 'Test drawing'));
    assert.equal((await post('/admin/drawings/'+row._id,{...drawing,title:'Edited drawing',order:'1'})).status,303);
    assert.equal((await post('/admin/drawings/'+row._id+'/delete',{confirm:'no'})).status,400);
    assert.equal((await post('/admin/drawings/'+row._id+'/delete',{confirm:'delete'})).status,303);

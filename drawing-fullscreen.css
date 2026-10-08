@@ -1,0 +1,15 @@
+body { background: #efefef; color: #222; font: 13px/1.4 Arial, sans-serif; margin: 4px; display: flex; flex-direction: column; height: calc(100dvh - 8px); }
+button, input { font: inherit; border: 1px solid #999; background: #eee; color: #222; padding: 3px 6px; border-radius: 0; }
+.drawing-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 7px; }
+.drawing-tools input[type=range] { width: 65px; padding: 0; }
+.drawing-tools input[type=color] { width: 30px; height: 24px; padding: 0; }
+button[aria-pressed=true] { border-color: #222; background: #ccc; }
+.fullscreen-stage { flex: 1; min-height: 0; display: flex; align-items: flex-start; justify-content: flex-start; }
+#board { touch-action: none; cursor: crosshair; background: #fff; border: 1px solid #ddd; max-width: 100%; max-height: 100%; width: auto; height: auto; }
+#floatingButton { position: fixed; right: 12px; bottom: 12px; width: 38px; height: 38px; border-radius: 50%; background: #97a5a8; font-size: 22px; cursor: pointer; }
+#drawing-status { margin: 4px 0; }
+.drawing-layer-panel { padding: 4px 0; }
+#drawing-layers { display: flex; flex-wrap: wrap; gap: 4px; }
+.drawing-layer { display: flex; align-items: center; gap: 3px; }
+.drawing-layer-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-top: 4px; }
+.layer-rename input { width: 90px; }
