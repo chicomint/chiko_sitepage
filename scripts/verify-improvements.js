@@ -42,6 +42,7 @@ try {
   await visitor.mouse.move(150, 150);
   await page.waitForFunction(() => document.querySelectorAll('.remote-cursor').length > 0);
   check(true, 'Other visitor cursors and live counts remain functional');
+  check(await page.locator('.remote-cursor img').first().evaluate(el => el.src.endsWith('/media/miku-miku-oo-ee-oo/Normal_32.gif') && el.width === 32 && getComputedStyle(el).width === '32px'), 'Other visitors keep the original 32px Miku cursor');
   await visitorContext.close();
   const since = presence.since; await page.reload({ waitUntil: 'domcontentloaded' });
   await page.waitForFunction(() => document.querySelector('.discord-duration').textContent.includes('2 hours'));
@@ -56,7 +57,7 @@ try {
   await page.waitForFunction(() => document.querySelector('.discord-duration').textContent === 'Duration unavailable');
   check(true, 'Unknown duration is never fabricated');
   await page.mouse.move(100, 100); await page.waitForTimeout(100);
-  check(await page.locator('#miku-cursor').evaluate(el => el.width === 32 && getComputedStyle(el).width === '32px'), 'Cursor uses original 32px artwork');
+  check(await page.locator('#miku-cursor').count() === 0 && await page.locator('body').evaluate(el => getComputedStyle(el).cursor === 'auto'), 'Local mouse uses the native browser cursor');
   await page.screenshot({ path: 'artifacts/improvements/home-desktop.png', fullPage: true });
   await page.goto(origin + '/blogs'); await page.locator('.blog-list a').first().click();
   await page.waitForFunction(() => !document.querySelector('.comment-form button').disabled);
@@ -186,7 +187,7 @@ try {
   check(await phone.evaluate(() => window.ChikoDrawingBoard.exportCanvas().getContext('2d').getImageData(0, 0, 640, 480).data.some((v, i) => i % 4 === 3 && v)), 'Touch input draws without decorative cursor');
   phone.once('dialog', dialog => dialog.accept()); await phone.getByRole('button', { name: 'Clear All', exact: true }).click();
   check(await phone.evaluate(() => !window.ChikoDrawingBoard.exportCanvas().getContext('2d').getImageData(0, 0, 640, 480).data.some((v, i) => i % 4 === 3 && v)), 'Clear All works on touchscreens');
-  check(await phone.locator('#miku-cursor').evaluate(el => getComputedStyle(el).display === 'none'), 'Mobile keeps normal touch interactions');
+  check(await phone.locator('#miku-cursor').count() === 0, 'Mobile keeps normal touch interactions');
   check(errors.length === 0, 'No introduced browser errors: ' + errors.join('; '));
   const report = { passed: true, checks, consoleErrors: errors, isolatedThirdPartyResources: [...new Set(externalFailures)] };
   await writeFile('artifacts/improvements/report.json', JSON.stringify(report, null, 2)); console.log(JSON.stringify({ passed: true, checks: checks.length, consoleErrors: errors }));

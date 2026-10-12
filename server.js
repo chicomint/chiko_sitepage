@@ -43,7 +43,7 @@ function publicFiles() {
   for (const entry of readdirSync(ROOT, { withFileTypes: true })) {
     if (entry.isFile() && !entry.name.startsWith('.') && /\.(html|css)$/.test(entry.name)) files.set('/' + entry.name, join(ROOT, entry.name));
   }
-  for (const name of ['cursor.js', 'realtime.js', 'drawings.js', 'drawing-board.js', 'comments.js', 'discord-status.js', 'admin.js', 'robots.txt', 'sitemap.xml']) files.set('/' + name, join(ROOT, name));
+  for (const name of ['realtime.js', 'drawings.js', 'drawing-board.js', 'comments.js', 'discord-status.js', 'admin.js', 'robots.txt', 'sitemap.xml']) files.set('/' + name, join(ROOT, name));
   for (const folder of ['media', 'picture', 'd', 'math']) scan(folder);
   return files;
 }

@@ -1,4 +1,4 @@
-/* Miku cursor theme, with native fallbacks. */
+/* Native local cursors and Miku cursors for other visitors. */
 .visitor-stats {
   display: grid;
   grid-template-columns: max-content minmax(5ch, max-content);
@@ -64,7 +64,7 @@
 
 html,
 body {
-  cursor: url("media/miku-miku-oo-ee-oo/Normal_32.png") 0 0, auto;
+  cursor: auto;
 }
 
 a[href],
@@ -75,45 +75,16 @@ input[type="submit"],
 input[type="reset"],
 select,
 summary {
-  cursor: url("media/miku-miku-oo-ee-oo/Link_32.png") 7 0, pointer;
+  cursor: pointer;
 }
 
 button:disabled,
 input:disabled,
 select:disabled,
 textarea:disabled {
-  cursor: url("media/miku-miku-oo-ee-oo/NotAllowed_32.png") 15 15, not-allowed;
-}
-
-#miku-cursor {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 32px;
-  height: 32px;
-  image-rendering: pixelated;
-  max-width: none;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  pointer-events: none;
-  z-index: 2147483647;
-  visibility: hidden;
-}
-
-@media (any-hover: hover) and (any-pointer: fine) and (prefers-reduced-motion: no-preference) {
-  html.miku-cursor-active,
-  html.miku-cursor-active * {
-    cursor: none !important;
-  }
-
-  html.miku-cursor-active #miku-cursor {
-    visibility: visible;
-  }
+  cursor: not-allowed;
 }
 
 @media (any-pointer: coarse) and (hover: none) {
-  html, body, a[href], button, input, select, textarea { cursor: auto; }
-  #miku-cursor, .remote-cursor { display: none; }
+  .remote-cursor { display: none; }
 }
-html.miku-cursor-active canvas { cursor: crosshair !important; }
