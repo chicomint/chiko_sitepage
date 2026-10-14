@@ -1,8 +1,12 @@
 .git/
 node_modules/
+systems/node_modules/
 .env
 .env.*
 data/
+systems/data/
 backups/
 artifacts/
+systems/artifacts/
 test/
+systems/test/

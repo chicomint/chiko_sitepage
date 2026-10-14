@@ -1,9 +1,12 @@
+# Ignore installed dependencies in every folder.
 node_modules/
 .env
 .env.*
 !.env.example
 data/
+systems/data/
 backups/
 artifacts/
+systems/artifacts/
 .railway/
 *.log

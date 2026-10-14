@@ -1,24 +1,4 @@
 /* Native local cursors and Miku cursors for other visitors. */
-.visitor-stats {
-  display: grid;
-  grid-template-columns: max-content minmax(5ch, max-content);
-  gap: 0 1.5em;
-  width: max-content;
-  margin: 1em 0;
-  font: 0.8em/1.6 monospace;
-  color: rgb(81, 147, 31);
-}
-
-.visitor-stats dt,
-.visitor-stats dd {
-  margin: 0;
-}
-
-.visitor-stats dd {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
 .remote-cursor {
   position: fixed;
   top: 0;
@@ -59,7 +39,6 @@
 
 @media (prefers-color-scheme: dark) {
   .remote-cursor span { background: #222; color: #7fb82a; }
-  .visitor-stats { color: #7fb82a; }
 }
 
 html,

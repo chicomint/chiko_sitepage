@@ -336,15 +336,6 @@ user {
 .drawing-tools button[aria-pressed="true"] { outline: 1px solid currentColor; outline-offset: 2px; }
 .drawing-tools button:disabled { opacity: 0.6; }
 
-/* A small presence line, using the existing page typography. */
-.discord-status { display: block; margin: 12px 0; font-size: .8em; line-height: 1.5; }
-.discord-dot { display: inline-block; width: 8px; height: 8px; background: #666; vertical-align: middle; border: 1px solid currentColor; }
-.discord-status[data-status=online] .discord-dot { background: #43b581; }
-.discord-status[data-status=idle] .discord-dot { background: #faa61a; }
-.discord-status[data-status=dnd] .discord-dot { background: #f04747; }
-.discord-status[data-status=offline] .discord-dot { background: #222; }
-.discord-duration { opacity: .8; }
-
 .drawing-layer-panel { width: 100%; max-width: 640px; font-size: .8em; border: 1px solid #777; padding: 6px; box-sizing: border-box; }
 .drawing-layer-panel summary { font-weight: bold; }
 #drawing-layers { display: flex; flex-wrap: wrap; gap: 4px 10px; margin: 5px 0; }
