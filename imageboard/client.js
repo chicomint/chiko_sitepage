@@ -1,0 +1,495 @@
+(function () {
+  'use strict';
+
+  var PASSWORD_KEY = 'chikochan-post-password';
+  var HIDDEN_KEY = 'chikochan-hidden-posts';
+  var THEME_KEY = 'chikochan-theme';
+  var preview = null;
+
+  function normalizeTheme(theme) {
+    return theme === 'dark' || theme === 'yotsuba-b' ? theme : 'light';
+  }
+
+  function applyTheme(theme) {
+    var root = document.documentElement;
+    theme = normalizeTheme(theme);
+    if (theme !== 'light') root.setAttribute('data-theme', theme);
+    else root.removeAttribute('data-theme');
+    document.querySelectorAll('.theme-selector').forEach(function (select) {
+      select.value = theme;
+    });
+  }
+
+  document.addEventListener('change', function (event) {
+    if (!event.target.matches('.theme-selector')) return;
+    var theme = normalizeTheme(event.target.value);
+    try { window.localStorage.setItem(THEME_KEY, theme); } catch (error) { /* Storage is optional. */ }
+    applyTheme(theme);
+  });
+
+  document.addEventListener('error', function (event) {
+    if (event.target.matches && event.target.matches('.global-banner img')) event.target.closest('.global-banner').hidden = true;
+  }, true);
+
+  function initializeTheme() {
+    var saved = storageGet(THEME_KEY, 'light');
+    applyTheme(saved);
+    document.querySelectorAll('.global-banner img').forEach(function (img) {
+      if (img.complete && !img.naturalWidth) img.closest('.global-banner').hidden = true;
+    });
+  }
+
+  function storageGet(key, fallback) {
+    try {
+      var value = window.localStorage.getItem(key);
+      return value === null ? fallback : value;
+    } catch (error) {
+      return fallback;
+    }
+  }
+
+  function storageSet(key, value) {
+    try {
+      window.localStorage.setItem(key, value);
+    } catch (error) {
+      // Private browsing modes can disable storage; posting still works.
+    }
+  }
+
+  function randomPassword() {
+    if (window.crypto && window.crypto.getRandomValues) {
+      var bytes = new Uint8Array(12);
+      window.crypto.getRandomValues(bytes);
+      return Array.from(bytes, function (byte) { return byte.toString(36).padStart(2, '0'); }).join('').slice(0, 18);
+    }
+    return Math.random().toString(36).slice(2) + Date.now().toString(36);
+  }
+
+  function initializePasswords() {
+    var password = storageGet(PASSWORD_KEY, '');
+    if (!password) {
+      password = randomPassword();
+      storageSet(PASSWORD_KEY, password);
+    }
+    document.querySelectorAll('.post-password').forEach(function (input) {
+      if (!input.value) input.value = password;
+      input.addEventListener('change', function () {
+        if (input.value) {
+          password = input.value;
+          storageSet(PASSWORD_KEY, password);
+          document.querySelectorAll('.post-password').forEach(function (other) {
+            if (other !== input) other.value = password;
+          });
+        }
+      });
+    });
+  }
+
+  function selectedQuote() {
+    var selection = window.getSelection ? window.getSelection() : null;
+    if (!selection || selection.isCollapsed || !selection.rangeCount) return '';
+    var node = selection.anchorNode && selection.anchorNode.parentElement;
+    if (!node || !node.closest('.postMessage')) return '';
+    return selection.toString().trim().split(/\r?\n/).map(function (line) { return '>' + line; }).join('\n');
+  }
+
+  function quotePost(postId, threadId) {
+    var details = document.getElementById('reply-form-' + threadId);
+    if (details && details.tagName.toLowerCase() === 'details') details.open = true;
+    var textarea = document.getElementById('reply-comment-' + threadId);
+    if (!textarea) return true;
+
+    var addition = '>>' + postId + '\n';
+    var quote = selectedQuote();
+    if (quote) addition += quote + '\n';
+    if (textarea.value && !textarea.value.endsWith('\n')) textarea.value += '\n';
+    textarea.value += addition;
+    textarea.focus();
+    textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+    history.replaceState(null, '', '#reply-form-' + threadId);
+    return false;
+  }
+
+  function postContainer(postId) {
+    var container = document.getElementById('pc' + postId) || document.getElementById('p' + postId);
+    if (container && container.classList.contains('opContainer')) return container.closest('.thread') || container;
+    return container;
+  }
+
+  function highlightHash() {
+    document.querySelectorAll('.post-highlighted').forEach(function (post) {
+      post.classList.remove('post-highlighted');
+    });
+    var match = window.location.hash.match(/^#p(\d+)$/);
+    if (!match) return;
+    var target = document.getElementById('p' + match[1]);
+    if (target) target.classList.add('post-highlighted');
+  }
+
+  function removePreview() {
+    if (preview) preview.remove();
+    preview = null;
+  }
+
+  function showPreview(link, event) {
+    var postId = link.dataset.postId;
+    var source = document.getElementById('p' + postId);
+    if (!source || link.closest('#p' + postId)) return;
+    removePreview();
+    preview = source.cloneNode(true);
+    preview.removeAttribute('id');
+    preview.querySelectorAll('[id]').forEach(function (node) { node.removeAttribute('id'); });
+    preview.querySelectorAll('form, .post-menu, .delete, .post-hide-button').forEach(function (node) { node.remove(); });
+    preview.querySelectorAll('.video-box').forEach(function (box) { collapseVideo(box); });
+    preview.classList.add('quote-preview');
+    document.body.appendChild(preview);
+    var left = Math.min(event.clientX + 14, window.innerWidth - preview.offsetWidth - 8);
+    var top = Math.min(event.clientY + 14, window.innerHeight - preview.offsetHeight - 8);
+    preview.style.left = Math.max(4, left) + 'px';
+    preview.style.top = Math.max(4, top) + 'px';
+  }
+
+  function hiddenIds() {
+    try {
+      var parsed = JSON.parse(storageGet(HIDDEN_KEY, '[]'));
+      return Array.isArray(parsed) ? parsed.map(String) : [];
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function setPostHidden(postId, hidden, remember) {
+    var container = postContainer(postId);
+    if (!container) return;
+    var oldPlaceholder = document.querySelector('[data-show-post="' + postId + '"]');
+    if (oldPlaceholder) oldPlaceholder.remove();
+    container.classList.toggle('post-hidden', hidden);
+    if (hidden) {
+      var placeholder = document.createElement('button');
+      placeholder.type = 'button';
+      placeholder.className = 'show-hidden-post';
+      placeholder.dataset.showPost = postId;
+      placeholder.textContent = '[Show hidden post No.' + postId + ']';
+      container.insertAdjacentElement('afterend', placeholder);
+    }
+    if (remember) {
+      var ids = hiddenIds().filter(function (id) { return id !== String(postId); });
+      if (hidden) ids.push(String(postId));
+      storageSet(HIDDEN_KEY, JSON.stringify(ids.slice(-300)));
+    }
+  }
+
+  function initializeHiddenPosts() {
+    hiddenIds().forEach(function (postId) { setPostHidden(postId, true, false); });
+  }
+
+  function initializeCatalogFilter() {
+    var input = document.getElementById('catalog-filter');
+    if (!input) return;
+    input.addEventListener('input', function () {
+      var query = input.value.trim().toLowerCase();
+      document.querySelectorAll('.catalog-card').forEach(function (card) {
+        card.hidden = Boolean(query) && !card.dataset.catalogText.includes(query);
+      });
+    });
+  }
+
+  function renderTurnstile(form) {
+    var container = form && form.querySelector('[data-turnstile-widget]');
+    if (!container || container.dataset.widgetId) return container;
+    var status = container.querySelector('.captcha-status');
+    if (!window.turnstile || typeof window.turnstile.render !== 'function') {
+      if (status) status.textContent = 'Human verification could not load. Check your connection and refresh.';
+      return container;
+    }
+    try {
+      if (status) status.textContent = 'Loading human verification…';
+      var widgetId = window.turnstile.render(container, {
+        sitekey: container.dataset.sitekey,
+        action: container.dataset.action || 'post',
+        theme: 'auto',
+        appearance: 'interaction-only',
+        'response-field': true,
+        'response-field-name': 'cf-turnstile-response'
+      });
+      container.dataset.widgetId = String(widgetId);
+      if (status && status.isConnected) status.remove();
+    } catch (error) {
+      container.textContent = 'Human verification could not load. Refresh and try again.';
+    }
+    return container;
+  }
+
+  function initializeTurnstile() {
+    document.querySelectorAll('form[data-turnstile-form]').forEach(function (form) {
+      form.addEventListener('focusin', function () { renderTurnstile(form); }, { once: true });
+      form.addEventListener('pointerdown', function () { renderTurnstile(form); }, { once: true });
+      var details = form.closest('details');
+      if (details) {
+        details.addEventListener('toggle', function () {
+          if (details.open) renderTurnstile(form);
+        });
+      }
+    });
+  }
+
+  function authorizationStatus(form) {
+    var container = form.querySelector('[data-turnstile-widget]');
+    if (!container) return null;
+    var status = container.querySelector('.captcha-status');
+    if (!status) {
+      status = document.createElement('span');
+      status.className = 'captcha-status';
+      container.appendChild(status);
+    }
+    return status;
+  }
+
+  async function authorizePosting(form, submitter) {
+    var status = authorizationStatus(form);
+    var captchaToken = form.querySelector('input[name="cf-turnstile-response"]');
+    if (form.hasAttribute('data-turnstile-form') && (!captchaToken || !captchaToken.value)) {
+      var captcha = renderTurnstile(form);
+      if (status) status.textContent = 'Complete human verification before posting.';
+      if (captcha) captcha.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      return;
+    }
+
+    if (submitter) submitter.disabled = true;
+    if (status) status.textContent = 'Authorizing this post…';
+    try {
+      var body = new URLSearchParams({
+        board: form.dataset.boardUri || '',
+        threadId: form.dataset.threadId || '0',
+        'cf-turnstile-response': captchaToken ? captchaToken.value : ''
+      });
+      var response = await window.fetch('/posting-authorizations', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: body.toString(),
+        redirect: 'error'
+      });
+      var result = await response.json().catch(function () { return {}; });
+      if (!response.ok || result.ok !== true) throw new Error(result.error || 'Posting authorization failed.');
+      form.dataset.postingAuthorized = '1';
+      if (status) status.textContent = 'Authorized. Uploading…';
+      if (submitter && submitter.isConnected) form.requestSubmit(submitter);
+      else form.requestSubmit();
+    } catch (error) {
+      if (submitter) submitter.disabled = false;
+      if (status) status.textContent = error.message || 'Posting authorization failed. Refresh and try again.';
+      if (window.turnstile && captchaToken) {
+        var widget = form.querySelector('[data-turnstile-widget]');
+        if (widget && widget.dataset.widgetId) window.turnstile.reset(widget.dataset.widgetId);
+      }
+    }
+  }
+
+  function updateExpandedMedia(attachments) {
+    if (!attachments) return;
+    var expanded = Boolean(attachments.querySelector('.expanded-image, .post-video'));
+    attachments.classList.toggle('post-attachments-expanded', expanded);
+    var post = attachments.closest('.post');
+    if (post) post.classList.toggle('post-media-expanded', expanded);
+  }
+
+  function collapseVideo(box) {
+    var video = box.querySelector('.post-video');
+    if (video) {
+      video.pause();
+      video.removeAttribute('src');
+      video.querySelectorAll('source').forEach(function (source) { source.remove(); });
+      video.load();
+      video.remove();
+    }
+    var attachment = box.closest('.post-attachment');
+    var collapse = attachment && attachment.querySelector('[data-collapse-video]');
+    if (collapse) collapse.remove();
+    var link = box.querySelector('.video-preview');
+    if (link) {
+      link.hidden = false;
+      link.setAttribute('aria-expanded', 'false');
+    }
+    box.classList.remove('video-revealed');
+    if (attachment) attachment.classList.remove('post-attachment-expanded');
+    updateExpandedMedia(box.closest('.post-attachments'));
+  }
+
+  document.addEventListener('click', function (event) {
+    var quoteLink = event.target.closest('[data-quote-id][data-thread-id]');
+    if (quoteLink && quotePost(quoteLink.dataset.quoteId, quoteLink.dataset.threadId) === false) {
+      event.preventDefault();
+      return;
+    }
+
+    var collapse = event.target.closest('[data-collapse-video]');
+    if (collapse) {
+      event.preventDefault();
+      var videoBox = collapse.closest('.post-attachment').querySelector('.video-box');
+      collapseVideo(videoBox);
+      videoBox.querySelector('.video-preview').focus();
+      return;
+    }
+
+    var videoLink = event.target.closest('.video-preview');
+    if (videoLink) {
+      if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+      event.preventDefault();
+      var videoBox = videoLink.closest('.video-box');
+      if (videoBox.classList.contains('spoiler-image') && !videoBox.classList.contains('spoiler-revealed')) {
+        videoBox.classList.add('spoiler-revealed');
+        var spoiler = videoBox.querySelector('[data-reveal-spoiler]');
+        if (spoiler) spoiler.remove();
+        return;
+      }
+      if (videoBox.querySelector('.post-video')) return;
+      var video = document.createElement('video');
+      video.className = 'post-video';
+      video.controls = true;
+      video.preload = 'none';
+      video.playsInline = true;
+      var poster = videoLink.querySelector('img');
+      if (poster) video.poster = poster.src;
+      var source = document.createElement('source');
+      source.src = videoLink.dataset.videoSrc;
+      source.type = videoLink.dataset.videoType;
+      video.appendChild(source);
+      var fallback = document.createElement('a');
+      fallback.href = videoLink.href;
+      fallback.textContent = 'Download video';
+      video.appendChild(fallback);
+      var fileInfo = videoBox.closest('.post-attachment').querySelector('.file-info');
+      var closeLink = document.createElement('a');
+      closeLink.href = '#' + fileInfo.id;
+      closeLink.dataset.collapseVideo = '';
+      closeLink.textContent = '[Close]';
+      closeLink.setAttribute('aria-label', 'Close video');
+      videoLink.hidden = true;
+      videoLink.setAttribute('aria-expanded', 'true');
+      videoBox.appendChild(video);
+      fileInfo.appendChild(closeLink);
+      videoBox.classList.add('video-revealed');
+      videoBox.closest('.post-attachment').classList.add('post-attachment-expanded');
+      updateExpandedMedia(videoBox.closest('.post-attachments'));
+      closeLink.focus();
+      return;
+    }
+
+    var imageLink = event.target.closest('.fileThumb');
+    if (imageLink) {
+      if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+      var box = imageLink.closest('.image-box');
+      if (box && box.classList.contains('spoiler-image') && !box.classList.contains('spoiler-revealed')) {
+        event.preventDefault();
+        box.classList.add('spoiler-revealed');
+        return;
+      }
+      event.preventDefault();
+      var expanded = imageLink.classList.toggle('expanded-image');
+      if (box) box.classList.toggle('image-expanded', expanded);
+      var attachment = imageLink.closest('.post-attachment');
+      if (attachment) attachment.classList.toggle('post-attachment-expanded', expanded);
+      var attachments = imageLink.closest('.post-attachments');
+      updateExpandedMedia(attachments);
+      var image = imageLink.querySelector('[data-expand-image]');
+      if (image) image.src = expanded ? image.dataset.fullSrc : image.dataset.thumbnailSrc;
+      return;
+    }
+
+    var spoilerButton = event.target.closest('[data-reveal-spoiler]');
+    if (spoilerButton) {
+      var spoilerBox = spoilerButton.closest('.spoiler-image');
+      if (spoilerBox) spoilerBox.classList.add('spoiler-revealed');
+      spoilerButton.remove();
+      return;
+    }
+
+    var hideButton = event.target.closest('[data-hide-post]');
+    if (hideButton) {
+      setPostHidden(hideButton.dataset.hidePost, true, true);
+      return;
+    }
+
+    var showButton = event.target.closest('[data-show-post]');
+    if (showButton) setPostHidden(showButton.dataset.showPost, false, true);
+  });
+
+  document.addEventListener('mouseover', function (event) {
+    var link = event.target.closest('.quotelink, .backlink');
+    if (link && !link.contains(event.relatedTarget)) showPreview(link, event);
+  });
+
+  document.addEventListener('mouseout', function (event) {
+    var link = event.target.closest('.quotelink, .backlink');
+    if (link && !link.contains(event.relatedTarget)) removePreview();
+  });
+
+  document.addEventListener('submit', function (event) {
+    var confirmation = event.target.dataset.confirm;
+    if (confirmation && !window.confirm(confirmation)) {
+      event.preventDefault();
+      return;
+    }
+    if (event.target.id === 'delete-form') {
+      var selectedPost = Array.from(event.target.elements).some(function (control) {
+        return control.name === 'postIds' && control.checked;
+      });
+      if (!selectedPost) {
+        event.preventDefault();
+        window.alert('Select at least one post first.');
+        return;
+      }
+    }
+    // Native image verification submits the original multipart form directly.
+    if (event.target.querySelector('input[name="nativeAnswer"]')?.value.trim()) return;
+    if (event.target.matches('form[data-posting-authorization]')
+      && event.target.dataset.postingAuthorized !== '1') {
+      event.preventDefault();
+      void authorizePosting(event.target, event.submitter);
+      return;
+    }
+    if (event.target.dataset.postingAuthorized === '1') {
+      delete event.target.dataset.postingAuthorized;
+    } else if (event.target.matches('form[data-turnstile-form]')) {
+      var token = event.target.querySelector('input[name="cf-turnstile-response"]');
+      if (!token || !token.value) {
+        event.preventDefault();
+        var captcha = renderTurnstile(event.target);
+        if (captcha) {
+          var message = captcha.querySelector('.captcha-status');
+          if (message) message.textContent = 'Complete human verification before posting.';
+          captcha.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }
+        return;
+      }
+    }
+    var button = event.target.querySelector('[type="submit"]');
+    if (button) {
+      button.disabled = true;
+      button.dataset.originalValue = button.value || button.textContent;
+      if ('value' in button) button.value = 'Posting…';
+      else button.textContent = 'Working…';
+    }
+  });
+
+  document.addEventListener('DOMContentLoaded', function () {
+    initializeTheme();
+    initializePasswords();
+    initializeHiddenPosts();
+    initializeCatalogFilter();
+    initializeTurnstile();
+    highlightHash();
+    var params = new URLSearchParams(window.location.search);
+    var quoteId = params.get('quote') || params.get('q');
+    var threadId = document.body.dataset.threadId;
+    if (quoteId && threadId) quotePost(quoteId, threadId);
+    document.dispatchEvent(new CustomEvent('chikochan:ready'));
+  });
+
+  window.addEventListener('hashchange', highlightHash);
+}());

@@ -1,0 +1,14 @@
+
+#Fixed ui again also videos now show previews -10/19/2026
+#FIXED UI AGAIN!!!! - 10/2/26
+#fixed ui - 9/30/26
+
+# Layout update + JavaScript required — 9/25/26
+
+Now you can post even with JavaScript disabled.
+Also changes some UI and layout and boards banner
+
+#We support video 8/24/26
+Yep.
+#Welcome 8/22/26
+I was doing a lot of change and also added the new boards: /g/ /v/ and /adv/ I hope you guys enjoys it.

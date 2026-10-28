@@ -1,0 +1,34 @@
+name: ChikoChan checks
+on:
+  pull_request:
+    paths: ['imageboard/**', '.github/workflows/imageboard.yml']
+  push:
+    branches: [main, feat/chikochan-safe-migration]
+    paths: ['imageboard/**', '.github/workflows/imageboard.yml']
+permissions:
+  contents: read
+jobs:
+  imageboard:
+    runs-on: ubuntu-latest
+    services:
+      mongo:
+        image: mongo:7.0
+        ports: ['27017:27017']
+        options: >-
+          --health-cmd "mongosh --quiet --eval 'quit(db.adminCommand({ping:1}).ok ? 0 : 1)'"
+          --health-interval 10s --health-timeout 5s --health-retries 10
+    defaults:
+      run:
+        working-directory: imageboard
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: imageboard/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - run: npm run check
+      - run: npm test
+        env:
+          CHIKO_TEST_MONGO_URI: mongodb://127.0.0.1:27017
