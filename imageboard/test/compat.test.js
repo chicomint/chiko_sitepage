@@ -38,7 +38,7 @@ test('compatible HTTP application preserves board-scoped IDs and exercises posti
   t.after(async()=>{await client.close();await fs.rm(folder,{recursive:true,force:true});});
   const passwordSalt='source-salt',password='correct staff password';
   const root={_id:new ObjectId(),login:'root',globalRole:0,passwordMethod:'pbkdf2V2',passwordSalt,password:crypto.pbkdf2Sync(password,passwordSalt,16384,256,'sha512').toString('base64')};
-  await db.collection('users').insertMany([root,{_id:new ObjectId(),login:'boardmod',globalRole:4,chikoPasswordHash:await passwordHash(password)}]);
+  await db.collection('users').insertMany([root,{_id:new ObjectId(),login:'boardmod',globalRole:4,chikoPasswordHash:await passwordHash(password)},{...root,_id:new ObjectId(),login:'administrator',globalRole:1}]);
   await db.collection('boards').insertMany([{boardUri:'a',boardName:'A',boardDescription:'Original A',lastPostId:5,owner:'root',volunteers:['boardmod'],settings:[],unknown:{preserve:true}},{boardUri:'b',boardName:'B',lastPostId:5,owner:'root',volunteers:[],settings:[]}]);
   await db.collection('threads').insertMany(['a','b'].map(boardUri=>({boardUri,threadId:1,message:boardUri+' original',creation:new Date(),lastBump:new Date(),files:[],unknown:'keep',_chikoMigration:{oldId:boardUri==='a'?100:200}})));
   await db.collection('posts').insertMany(['a','b'].map(boardUri=>({boardUri,threadId:1,postId:2,message:'>>1 original reply '+boardUri,creation:new Date(),files:[],_chikoMigration:{oldId:boardUri==='a'?101:201}})));
@@ -68,6 +68,10 @@ test('compatible HTTP application preserves board-scoped IDs and exercises posti
   assert.equal((await guest.request('/admin/action',{method:'POST',body:new URLSearchParams({csrf:'forged'})})).status,403);
   assert.equal((await admin.form('/admin/staff',{login:'newmod',role:'2',password:'new moderator password'})).status,303);
   assert.equal((await store.user('newmod')).globalRole,2);
+  const lesserAdmin=browser();await lesserAdmin.request('/admin/login');assert.equal((await lesserAdmin.form('/admin/login',{login:'administrator',password})).status,303);
+  assert.equal((await lesserAdmin.form('/admin/staff',{login:'lower.mod',role:'2',password:'lower moderator password'})).status,303,'administrator may manage moderators');
+  assert.equal((await lesserAdmin.form('/admin/staff',{login:'equal.admin',role:'1',password:'another administrator password'})).status,403,'administrator cannot grant equal rank');
+  assert.equal((await lesserAdmin.form('/admin/staff',{login:'root',role:'4',disabled:'1'})).status,403,'administrator cannot disable root');
   assert.equal((await admin.form('/admin/board',{boardUri:'a',name:'Updated A',description:'Changed in sidecar',owner:'root',volunteers:'boardmod',theme:'blue'})).status,303);
   assert.equal((await store.board('a')).boardName,'Updated A');
   async function post(threadId=0,files=0){

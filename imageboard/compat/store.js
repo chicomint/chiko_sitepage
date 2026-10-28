@@ -47,7 +47,7 @@ class CompatibleStore {
   }
   can(user, board = null, action = 'moderate') {
     if (!user || user.chikoDisabled) return false;
-    if (Number.isInteger(user.globalRole) && user.globalRole >= 0 && user.globalRole <= (action === 'staff' ? 0 : 1)) return true;
+    if (Number.isInteger(user.globalRole) && user.globalRole >= 0 && user.globalRole <= 1) return true;
     if (action === 'staff') return false;
     if (user.globalRole === 2 && ['moderate','thread','ban','report','delete'].includes(action)) return true;
     if (user.globalRole === 3 && ['moderate','report','delete'].includes(action)) return true;
