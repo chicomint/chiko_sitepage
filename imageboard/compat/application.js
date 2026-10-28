@@ -257,7 +257,10 @@ async function createCompatibleApp(settings={}) {
   app.get('/:board/thread/:id',async(req,res)=>{
     const board=await boardFor(req),oldId=integer(req.params.id);
     const map=await store.db.collection('chikoIdMap').findOne({oldId,boardUri:board.boardUri});
-    const threadId=map?.threadId || oldId;if(!await store.thread(board.boardUri,threadId))throw httpError(404,'Thread not found.');res.redirect(301,`${R.url(board.boardUri,threadId)}${map?.postId?'#'+map.postId:''}`);
+    const threadId=map?.threadId || oldId;if(!await store.thread(board.boardUri,threadId))throw httpError(404,'Thread not found.');
+    // An OP redirect leaves the fragment absent so browsers retain old #p/#m
+    // reply anchors. Those aliases are rendered from the recorded native IDs.
+    res.redirect(301,`${R.url(board.boardUri,threadId)}${map?.postId&&map.postId!==map.threadId?'#'+map.postId:''}`);
   });
   app.get('/:board/res/:file',async(req,res)=>{
     const board=await boardFor(req),match=/^(\d+)\.html$/.exec(req.params.file),id=match?integer(match[1]):0;

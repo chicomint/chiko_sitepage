@@ -40,8 +40,9 @@ test('compatible HTTP application preserves board-scoped IDs and exercises posti
   const root={_id:new ObjectId(),login:'root',globalRole:0,passwordMethod:'pbkdf2V2',passwordSalt,password:crypto.pbkdf2Sync(password,passwordSalt,16384,256,'sha512').toString('base64')};
   await db.collection('users').insertMany([root,{_id:new ObjectId(),login:'boardmod',globalRole:4,chikoPasswordHash:await passwordHash(password)}]);
   await db.collection('boards').insertMany([{boardUri:'a',boardName:'A',boardDescription:'Original A',lastPostId:5,owner:'root',volunteers:['boardmod'],settings:[],unknown:{preserve:true}},{boardUri:'b',boardName:'B',lastPostId:5,owner:'root',volunteers:[],settings:[]}]);
-  await db.collection('threads').insertMany(['a','b'].map(boardUri=>({boardUri,threadId:1,message:boardUri+' original',creation:new Date(),lastBump:new Date(),files:[],unknown:'keep'})));
-  await db.collection('posts').insertMany(['a','b'].map(boardUri=>({boardUri,threadId:1,postId:2,message:'>>1 original reply '+boardUri,creation:new Date(),files:[]})));
+  await db.collection('threads').insertMany(['a','b'].map(boardUri=>({boardUri,threadId:1,message:boardUri+' original',creation:new Date(),lastBump:new Date(),files:[],unknown:'keep',_chikoMigration:{oldId:boardUri==='a'?100:200}})));
+  await db.collection('posts').insertMany(['a','b'].map(boardUri=>({boardUri,threadId:1,postId:2,message:'>>1 original reply '+boardUri,creation:new Date(),files:[],_chikoMigration:{oldId:boardUri==='a'?101:201}})));
+  await db.collection('chikoIdMap').insertOne({oldId:100,oldThreadId:100,boardUri:'a',threadId:1,postId:1});
   await db.collection('witnessedReleases').insertOne({version:16,active:true});
   const original=[];for(const name of ['users','boards','threads','posts','witnessedReleases'])for await(const doc of db.collection(name).find({})){original.push({name,id:doc._id,bytes:BSON.serialize(doc)});}
   const store=new CompatibleStore({client,database:db.databaseName});await store.ready;
@@ -50,6 +51,8 @@ test('compatible HTTP application preserves board-scoped IDs and exercises posti
   const base='http://127.0.0.1:'+server.address().port;
   function browser(){const cookies=new Map();return {cookies,async request(url,options={}){const response=await fetch(base+url,{...options,redirect:'manual',headers:{...options.headers,Cookie:[...cookies].map(([k,v])=>k+'='+v).join('; ')}});for(const cookie of response.headers.getSetCookie()){const [pair]=cookie.split(';');const at=pair.indexOf('=');cookies.set(pair.slice(0,at),pair.slice(at+1));}return response;},async form(url,fields){return this.request(url,{method:'POST',body:new URLSearchParams({csrf:cookies.get('chiko_csrf'),...fields})});}};}
   const guest=browser(),admin=browser(),mod=browser();
+  const oldUrl=await guest.request('/a/thread/100');assert.equal(oldUrl.status,301);assert.equal(oldUrl.headers.get('location'),'/a/res/1.html','do not overwrite an incoming reply fragment');
+  const originalHtml=await (await guest.request('/a/res/1.html')).text();assert.match(originalHtml,/id="p101"/);assert.match(originalHtml,/id="m101"/);
   for(const b of ['a','b']){const response=await guest.request('/api/'+b+'/thread/1');const data=await response.json();assert.equal(data.threadId,1);assert.deepEqual(data.posts.map(p=>p.id),[1,2]);assert.equal(data.posts[0].message,b+' original');assert.doesNotMatch(JSON.stringify(data),/password|salt|chikoIdentity|unknown/);}
   await admin.request('/admin/login');assert.equal((await admin.form('/admin/login',{login:'root',password})).status,303);
   await mod.request('/admin/login');assert.equal((await mod.form('/admin/login',{login:'boardmod',password})).status,303);
