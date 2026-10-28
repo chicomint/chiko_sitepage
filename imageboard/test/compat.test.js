@@ -45,7 +45,7 @@ test('compatible HTTP application preserves board-scoped IDs and exercises posti
   await db.collection('witnessedReleases').insertOne({version:16,active:true});
   const original=[];for(const name of ['users','boards','threads','posts','witnessedReleases'])for await(const doc of db.collection(name).find({})){original.push({name,id:doc._id,bytes:BSON.serialize(doc)});}
   const store=new CompatibleStore({client,database:db.databaseName});await store.ready;
-  const app=await createCompatibleApp({store,origin:'http://localhost',secret:'s'.repeat(40),abuseSecret:'a'.repeat(40),readonly:false,mediaDirectory:folder,legacyDirectory:folder});
+  const app=await createCompatibleApp({store,origin:'http://localhost',secret:'s'.repeat(40),abuseSecret:'a'.repeat(40),readonly:false,mediaDirectory:folder,legacyDirectory:folder,trustProxy:'loopback'});
   const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));t.after(()=>new Promise(resolve=>server.close(resolve)));
   const base='http://127.0.0.1:'+server.address().port;
   function browser(){const cookies=new Map();return {cookies,async request(url,options={}){const response=await fetch(base+url,{...options,redirect:'manual',headers:{...options.headers,Cookie:[...cookies].map(([k,v])=>k+'='+v).join('; ')}});for(const cookie of response.headers.getSetCookie()){const [pair]=cookie.split(';');const at=pair.indexOf('=');cookies.set(pair.slice(0,at),pair.slice(at+1));}return response;},async form(url,fields){return this.request(url,{method:'POST',body:new URLSearchParams({csrf:cookies.get('chiko_csrf'),...fields})});}};}
@@ -68,13 +68,16 @@ test('compatible HTTP application preserves board-scoped IDs and exercises posti
   assert.equal((await admin.form('/admin/board',{boardUri:'a',name:'Updated A',description:'Changed in sidecar',owner:'root',volunteers:'boardmod',theme:'blue'})).status,303);
   assert.equal((await store.board('a')).boardName,'Updated A');
   async function post(threadId=0,files=0){
-    const page=await guest.request(threadId?'/a/res/'+threadId+'.html':'/a/');const html=await page.text();
+    const page=await guest.request(threadId?'/a/res/'+threadId+'.html':'/a/',{headers:{'X-Forwarded-For':'203.0.113.10'}});const html=await page.text();
     const action=/action="([^\"]+nativeChallenge[^\"]+)"/.exec(html)?.[1];assert.ok(action,'posting form');
     const token=new URL(action,'http://localhost').searchParams.get('nativeChallenge');const solution=app.locals.compat.captcha.parse(token).answer;
+    const impostor=browser();await impostor.request('/a/');
+    const stolen=new FormData();for(const [k,v] of Object.entries({csrf:impostor.cookies.get('chiko_csrf'),message:'A copied challenge must fail',nativeAnswer:solution,...(threadId?{threadId:String(threadId)}:{})}))stolen.set(k,v);
+    assert.equal((await impostor.request(action,{method:'POST',body:stolen})).status,403,'challenge is bound to its browser cookie');
     const body=new FormData();for(const [k,v] of Object.entries({csrf:guest.cookies.get('chiko_csrf'),message:'>>1 test <script>alert(1)</script>',name:'Name#trip-secret',password:'deletion password',nativeAnswer:solution,...(threadId?{threadId:String(threadId)}:{})}))body.set(k,v);
     const sharp=require('sharp');const png=await sharp({create:{width:2,height:2,channels:3,background:'pink'}}).png().toBuffer();
     for(let i=0;i<files;i++)body.append('files',new Blob([png],{type:'image/png'}),'test.png');
-    const response=await guest.request(action,{method:'POST',body});assert.equal(response.status,303,await response.text());
+    const response=await guest.request(action,{method:'POST',body,headers:{'X-Forwarded-For':'203.0.113.20'}});assert.equal(response.status,303,await response.text());
     return {location:response.headers.get('location'),action,body};
   }
   const created=await post(0,2);const newId=Number(/res\/(\d+)/.exec(created.location)[1]);assert.equal(newId,6);

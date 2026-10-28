@@ -82,7 +82,8 @@ async function createCompatibleApp(settings={}) {
   async function context(req){return {boards:await store.boards(),user:req.user,readonly};}
   async function page(req,res,title,html,extra={}){res.type('html').send(R.layout(title,html,{...await context(req),...extra}));}
   async function boardFor(req){const board=BOARD.test(req.params.board || '')?await store.board(req.params.board):null;if(!board)throw httpError(404,'Board not found.');return board;}
-  function issueCaptcha(req,res,board,threadId=0){const session=captcha.session(req,res);req.challenge=captcha.issue({board,thread:threadId,addressKey:req.identity,session});}
+  function captchaBinding(session){return crypto.createHmac('sha256',secret).update(`captcha-session:${session}`).digest('base64url');}
+  function issueCaptcha(req,res,board,threadId=0){const session=captcha.session(req,res);req.challenge=captcha.issue({board,thread:threadId,addressKey:captchaBinding(session),session});}
   function back(res,board,threadId){res.redirect(303,threadId?R.url(board,threadId):`/${R.enc(board)}/`);}
   const directory=boards=>`<div class="directory">${boards.map(b=>`<a class="card" href="/${R.enc(b.boardUri)}/"><strong>/${R.e(b.boardUri)}/ — ${R.e(b.boardName)}</strong><p>${R.e(b.boardDescription || '')}</p></a>`).join('')}</div>`;
 
@@ -237,7 +238,11 @@ async function createCompatibleApp(settings={}) {
   },protect,async(req,res)=>{
     const board=await boardFor(req),threadId=integer(req.body.threadId),message=text(req.body.message,16000);
     if(req.body.website || (!message && !req.files?.length))throw httpError(400,'A message or attachment is required.');
-    const challenge=await captcha.consume(req,{board:board.boardUri,thread:threadId,addressKey:req.identity});captcha.verify(challenge,req.body.nativeAnswer);
+    // Bind verification to the browser session. Mobile connections and proxy
+    // routes may change during an upload; IP-based admission/rate limits remain
+    // independent. Cookie, board, thread, expiry and atomic nonce checks remain.
+    const verificationSession=parseCookies(req.headers.cookie).chikochan_verification || '';
+    const challenge=await captcha.consume(req,{board:board.boardUri,thread:threadId,addressKey:captchaBinding(verificationSession)});captcha.verify(challenge,req.body.nativeAnswer);
     await store.rateLimit(req.identity,threadId?'reply':'thread',threadId?8:3,threadId?60000:10*60000);
     if(await store.banned(req.identity,board.boardUri))throw httpError(403,'Posting is restricted for this connection.');
     if(threadId){const t=await store.thread(board.boardUri,threadId);if(!t || t.locked || t.archived)throw httpError(403,'This thread is unavailable for replies.');}
