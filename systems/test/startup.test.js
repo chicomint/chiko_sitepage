@@ -21,7 +21,7 @@ test('server starts and serves pages when optional public folders have been dele
     await new Promise(resolve => app.server.listen(0, '127.0.0.1', resolve));
     const origin = 'http://127.0.0.1:' + app.server.address().port;
     assert.equal(await (await fetch(origin + '/health')).text(), 'ok');
-    for (const path of ['/', '/blogs', '/all_blog', '/drawings', '/realtime.js', '/style.css', '/cursor.css', '/visitor-stats.css', '/sitemap.xml', '/robots.txt']) assert.equal((await fetch(origin + path)).status, 200, path);
+    for (const path of ['/', '/blogs', '/all_blog', '/drawings', '/realtime.js', '/style.css', '/cursor.css', '/sitemap.xml', '/robots.txt']) assert.equal((await fetch(origin + path)).status, 200, path);
     for (const path of ['/d/', '/math/', '/media/missing.png', '/picture/missing.jpg', '/server.js', '/package.json']) assert.equal((await fetch(origin + path)).status, 404, path);
     assert.ok(!(await readdir(folder)).includes('d'), 'Startup does not recreate the deleted folder');
   } finally { await app?.close(); await rm(folder, { recursive: true, force: true }); }

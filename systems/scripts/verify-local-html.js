@@ -30,23 +30,30 @@ try {
       });
       assert.deepEqual(failedImages, [], name + ' ' + path + ': local images loaded');
       if (['index.html', 'blogs.html', 'all_blog.html', 'drawings.html', 'credits.html', 'project.html'].includes(path)) {
-        assert.ok(await page.evaluate(() => getComputedStyle(document.body).fontFamily.includes('sans-serif')), name + ' ' + path + ': site theme applied');
+        await page.evaluate(() => document.fonts.ready);
+        assert.ok(await page.evaluate(() => getComputedStyle(document.body).fontFamily.includes('Arial')), name + ' ' + path + ': reference typography applied');
+        assert.ok(await page.evaluate(() => [...document.fonts].some(font => font.family.includes('DotGothic16') && font.status === 'loaded')), name + ' ' + path + ': local font loaded');
         assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), name + ' ' + path + ': no horizontal overflow');
       }
       checks.push(name + ': ' + path);
     }
     await page.goto(pathToFileURL(join(root, 'blogs.html')).href, { waitUntil: 'load' });
-    assert.equal(await page.locator('user').count(), 1);
+    // Wait for intrinsic image sizes before scrolling to the archive link.
+    await page.locator('img').evaluateAll(images => Promise.all(images.filter(image => image.src.startsWith('file:')).map(image => image.decode().catch(() => {}))));
+    assert.equal(await page.locator('user').count(), 3);
     await page.screenshot({ path: join(output, 'blogs-' + name + '.png'), fullPage: true });
-    await page.getByRole('link', { name: '|Click here to see all post.|', exact: true }).click();
-    assert.ok(page.url().endsWith('/all_blog.html'));
-    assert.equal(await page.locator('user').count(), 35);
+    const archiveLink = page.getByRole('link', { name: '|Click here to see all post.|', exact: true });
+    await archiveLink.scrollIntoViewIfNeeded();
+    await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+    await archiveLink.click();
+    await page.waitForURL('**/all_blog.html');
+    assert.equal(await page.locator('user').count(), 37);
     await page.screenshot({ path: join(output, 'archive-' + name + '.png') });
-    await page.getByRole('link', { name: '|Back|', exact: true }).click();
-    assert.ok(page.url().endsWith('/blogs.html'));
-    for (const [label, path] of [['| Homepage |', 'index.html'], ['project |', 'project.html'], ['credits |', 'credits.html'], ['drawings |', 'drawings.html'], ['blogs |', 'blogs.html']]) {
-      await page.getByRole('link', { name: label, exact: true }).click();
-      assert.ok(page.url().endsWith('/' + path), label + ' works as a local file');
+    await page.getByRole('link', { name: '← back to the blog', exact: true }).click();
+    await page.waitForURL('**/blogs.html');
+    for (const [label, path] of [['home', 'index.html'], ['projects', 'project.html'], ['credits', 'credits.html'], ['drawings', 'drawings.html'], ['blog', 'blogs.html']]) {
+      await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: label, exact: true }).click();
+      await page.waitForURL('**/' + path);
     }
     await page.goto(pathToFileURL(join(root, 'drawings.html')).href, { waitUntil: 'load' });
     await page.evaluate(() => window.ChikoDrawingBoard.ready);

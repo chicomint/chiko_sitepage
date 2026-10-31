@@ -216,10 +216,13 @@ test('bad origins, binary/oversized frames and backend file access are blocked',
   for (const path of ['/server.js', '/database.js', '/data/visitors.sqlite', '/package.json', '/.env', '/node_modules/ws/package.json', '/media/../database.js', '/discord-status.js', '/discord-presence.js', '/api/discord/status', '/api/discord/events', '/systems/package.json', '/systems/server.js', '/draw/database.js', '/draw/api.js', '/draw/worker.js', '/visit/stats.csv', '/visit/stats.js', '/cursor/server.js', '/site/http.js']) {
     assert.equal((await fetch(app.origin + path)).status, 404, path);
   }
-  for (const path of ['/', '/health', '/math/', '/realtime.js', '/cursor/client.js', '/cursor/style.css', '/visit/style.css', '/draw/board.js', '/draw/gallery.js', '/site/style.css', '/site/sakura.css', '/site/sakura-dark.css', '/style.css', '/sakura.css', '/sakura-dark.css', '/cursor.css', '/visitor-stats.css', '/drawing-fullscreen.css', '/robots.txt', '/sitemap.xml', '/media/miku-miku-oo-ee-oo/Normal_96.gif']) {
+  for (const path of ['/', '/health', '/math/', '/realtime.js', '/cursor/client.js', '/cursor/style.css', '/draw/board.js', '/draw/gallery.js', '/site/style.css', '/style.css', '/cursor.css', '/robots.txt', '/sitemap.xml', '/media/miku-miku-oo-ee-oo/Normal_96.gif']) {
     const response = await fetch(app.origin + path);
     assert.equal(response.status, 200, path);
     await response.arrayBuffer();
+  }
+  for (const path of ['/sakura.css', '/sakura-dark.css', '/site/sakura.css', '/site/sakura-dark.css', '/visitor-stats.css', '/visit/style.css', '/drawing-fullscreen.css', '/draw/fullscreen.css']) {
+    assert.equal((await fetch(app.origin + path)).status, 404, path);
   }
   assert.equal((await fetch(app.origin + '/d/')).status, 404);
 });

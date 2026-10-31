@@ -1,81 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <title>chicomint</title>
-    <link rel="shortcut icon" type="image/x-icon" href="media/chiki.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="style.css?v=1.9">
-    <link rel="stylesheet" href="sakura.css" media="screen" />
-    <link rel="stylesheet" href="sakura-dark.css" media="screen and (prefers-color-scheme: dark)" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Chicomint’s personal corner of the internet. Computers, projects, drawings, chess, chicken, and a whole lot of Hatsune Miku.">
+  <meta name="color-scheme" content="light dark">
+  <title>chicomint</title>
+  <link rel="icon" href="media/chiki.ico">
+  <link rel="stylesheet" href="style.css?v=3.2">
   <link rel="stylesheet" href="cursor.css?v=5">
-  <link rel="stylesheet" href="visitor-stats.css?v=1">
   <script src="systems/cursor/client.js?v=5" defer></script>
+  <script src="media/sidebar-image.js?v=2" defer></script>
+
 </head>
+<body class="chiko_site">
 
-<body>
-    <div class="sky">
-        <img src="media/star.png" class="falling-star" style="left: 10%;">
-        <img src="media/star.png" class="falling-star" style="left: 30%;">
-        <img src="media/star.png" class="falling-star" style="left: 50%;">
-        <img src="media/star.png" class="falling-star" style="left: 70%;">
-        <img src="media/star.png" class="falling-star" style="left: 90%;">
-    </div>
-   
-    <img src="media/top_migu.png"
-         class="side-image side-right-small"
-         alt="">
-   
+  <div class="chiko_box">
+    <header class="snowy_banner" aria-label="Site header">
+      <a class="chiko_title" href="index.html">Chicomint'site&lt;3</a>
+      <span class="tiny_face">(๑・ω・๑)</span>
+    </header>
+    <aside class="left_side" aria-label="Site sidebar">
+      <nav class="little_map side_box" aria-label="Main navigation">
+        <h2>navigation</h2>
+        <a href="index.html" aria-current="page">home</a>
+        <a href="blogs.html">blog</a>
+        <a href="project.html">projects</a>
+        <a href="drawings.html">drawings</a>
+        <a href="credits.html">credits</a>
+        <a href="https://chicomint.atabook.org/">guestbook</a>
+      </nav>
+      <section class="side_box visitor_box" aria-labelledby="stats-title">
+        <h2 id="stats-title">site stats</h2>
 
-    <h1>chicomint</h1>
-    <a href="index.html" style="color: rgb(127, 184, 42);">| Homepage |</a>
-    <a href="blogs.html">blogs |</a>
-    <a href="project.html">project |</a>
-    <a href="credits.html">credits |</a>
-    <a href="drawings.html">drawings |</a>
-    <a href="https://chicomint.atabook.org/">Guestbook |</a>
-    <hr>
-
-    <div class="shy">
-        <p>
-            Hi there! Welcome to my personal site! There isn't too much going on here, but I have a blog that I share what I'm up to, and a project page with some fun little things I've been working on; I'm super into computer stuff, and I absolutely love playing chess, Oh, and I love Hatsune Miku everrrr!!!! and really, really love chicken!!!! So yeah, that is all about.<br>:p<br>
-
-            <a href="https://github.com/chicomint" target="_blank" rel="noopener noreferrer" style="color: rgb(127, 184, 42); font-weight: bold; text-decoration: none;">
-                My GitHub!
-<br>
-            <a href="https://ko-fi.com/chicomint" target="_blank" rel="noopener noreferrer" style="color: rgb(127, 184, 42); font-weight: bold; text-decoration: none;">
-               My ko-fi
-            </a>
-        </p>
-
-        <p>(Thank you so much for visiting! &lt;3)</p>
-        <img src="media/e43.gif" alt="gif">
-        <img src="media/e50.gif" alt="gif">
-        <img src="media/e116.gif" alt="gif">
-        <img src="media/button5.png" alt="button">
-
-        <div class="mikumikumiuku">
-            <br>
-            <a href="https://dimden.dev/"><img src="https://dimden.dev/images/88x31.gif" width="88" height="31" alt="dimden"></a>
-            <a href="https://0oxo0.neocities.org/"><img src="https://0oxo0.neocities.org/0oxo0.gif" width="88" height="31" alt="neocities"></a>
-            <a href="https://luvstarkei.com/"><img src="https://i0.wp.com/luvstarkei.com/wp-content/uploads/2024/11/LuvstarKeiButton-1.png?resize=88%2C31&amp;ssl=1" width="88" height="31" alt="luvstar"></a>
-            <a href="https://candybox.nekoweb.org/"><img border="0" alt="candy box button" src="https://file.garden/aV64sEFBigftSaJL/candyboxbutton.gif"></a>
-            <a href="index.html"><img border="0" alt="chiko" src="media/chiko.png"></a>
-            <a href="https://boards.chiko.cc"><img border="0" alt="chiko boards" src="media/chikochan.png"></a>
-        </div>
-    </div>
-
-    <footer>
-        <hr>
-        <dl class="visitor-stats" aria-label="Visitor statistics">
-            <dt>Visits:</dt><dd data-presence-stat="visits" title="Includes 15,218 historical visits from February 20–September 19, 2026">15,423</dd>
-            <dt>On-site:</dt><dd data-presence-stat="online" aria-live="polite" title="Live cursors require a connection to the Node.js server">offline</dd>
+        <dl class="visitor_count" aria-label="Visitor statistics">
+          <dt>total visits</dt><dd data-presence-stat="visits" title="Includes historical visits">15,423</dd>
+          <dt>On-site:</dt><dd data-presence-stat="online" aria-live="polite">offline</dd>
         </dl>
-        <p style="animation: opacityPulse 2s ease-out; animation-iteration-count: infinite; opacity: 1; color: rgb(81, 147, 31);">
-            @Chicomint 2022-untill i die&lt;3
-        </p>
-    </footer>
-</body>
 
+      </section>
+
+      <div class="miku_kitty">
+        <img class="random_pic" data-random-sidebar-image src="media/image/027f2e9193b1421b57f8c346864b5e76a4dcf06e.png" alt="" width="250" height="229" loading="lazy">
+
+        <img class="blinkie" src="media/e50.gif" alt="A little blinkie from my collection" width="150" height="20" loading="lazy">
+        <img class="blinkie" src="media/e116.gif" alt="Another favorite blinkie" width="150" height="20" loading="lazy">
+      </div>
+    </aside>
+    <main id="main-content" class="home_stuff">
+      <section class="hello_there" aria-labelledby="welcome-title">
+        <div class="lil_intro">
+          <h1 id="welcome-title">Halo</h1>
+          <p>Hi there! Welcome to my personal site! There isn't too much going on here, but I have a blog that I share what I'm up to, and a project page with some fun little things I've been working on; I'm super into computer stuff, and I absolutely love playing chess, Oh, and I love Hatsune Miku everrrr!!!! and really, really love chicken!!!! So yeah, that is all about.</p>
+          <p>Make yourself at home. Look around, read a little, leave a drawing.<br>This place is always a work in progress, just like me. :p</p>
+          <p><a href="https://github.com/chicomint" target="_blank" rel="noopener noreferrer" style="color: rgb(127, 184, 42); font-weight: bold; text-decoration: none;">My GitHub!</a></p>
+        </div>
+        <div class="miku_corner">
+          <div class="miku_chat">
+            <div class="miku_says">
+              <p>:3</p>
+            </div>
+            <a class="witch_miku" href="credits.html" aria-label="Artwork credits">
+              <img src="media/top_migu.png" alt="A tiny Miku in a witch hat holding a pumpkin" width="500" height="500">
+            </a>
+          </div>
+        </div>
+      </section>
+      <section class="button_corner" aria-label="Around the site and the web">
+        <div class="tiny_buttons">
+          <a href="https://dimden.dev/"><img src="https://dimden.dev/images/88x31.gif" width="88" height="31" alt="dimden"></a>
+          <a href="https://0oxo0.neocities.org/"><img src="https://0oxo0.neocities.org/0oxo0.gif" width="88" height="31" alt="0oxo0"></a>
+          <a href="https://luvstarkei.com/"><img src="https://i0.wp.com/luvstarkei.com/wp-content/uploads/2024/11/LuvstarKeiButton-1.png?resize=88%2C31&amp;ssl=1" width="88" height="31" alt="LuvstarKei"></a>
+          <a href="https://candybox.nekoweb.org/"><img src="https://file.garden/aV64sEFBigftSaJL/candyboxbutton.gif" width="88" height="31" alt="Candy Box"></a>
+          <a href="index.html"><img src="media/chiko.png" width="88" height="31" alt="chicomint"></a>
+          <a href="https://boards.chiko.cc/"><img src="media/chikochan.png" width="88" height="31" alt="ChikoChan imageboard"></a>
+
+
+
+          <a href="credits.html"><img src="media/button5.png" width="88" height="31" alt="This is a nice site"></a>
+
+        </div>
+      </section>
+    </main>
+    <footer class="bye_bye">
+      <p>© 2022–2026 Chicomint</p>
+    </footer>
+  </div>
+</body>
 </html>

@@ -16,9 +16,9 @@ try {
    await page.screenshot({path:'systems/artifacts/'+(path.slice(1)||'home')+'.png',fullPage:true});
    assert.equal(await page.locator('a[href$=".html"]').count(),0);
  }
- await page.goto(origin+'/blogs');assert.equal(await page.locator('user').count(),1);
+ await page.goto(origin+'/blogs');assert.equal(await page.locator('user').count(),3);
  await page.getByRole('link',{name:'|Click here to see all post.|',exact:true}).click();await page.waitForURL(origin+'/all_blog');
- assert.equal(await page.locator('user').count(),35);
+ assert.equal(await page.locator('user').count(),37);
  assert.equal(await page.locator('.comment-form, .blog-list').count(),0);
  for(const path of ['/:3','/admin','/admin/drawings','/admin/uploads','/api/admin/uploads','/admin.js','/cms.css']) assert.equal((await context.request.get(origin+path)).status(),404);
  await page.setViewportSize({width:390,height:844});await page.goto(origin+'/blogs',{waitUntil:'networkidle'});await page.screenshot({path:'systems/artifacts/mobile-blogs.png',fullPage:true});

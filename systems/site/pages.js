@@ -3,10 +3,11 @@ import { escapeHtml as e } from './http.js';
 import { cleanHtml } from './urls.js';
 const original = readFileSync(new URL('../../drawings.html', import.meta.url), 'utf8');
 const head = cleanHtml(original.slice(0, original.indexOf('<main')))
+  .replace(/ aria-current="page"/g, '')
   .replace(/<script src="\/draw\/(?:board|gallery)\.js[^]*?<\/script>/g, '')
   .replace(/(?:href|src)="(?!(?:https?:|\/|#|data:))([^"#]+)"/g, match => match.replace('="', '="/'));
-const footer = original.slice(original.indexOf('<footer>'));
-export const layout = (title, content) => head.replace(/<title>[^]*?<\/title>/, `<title>${e(title)} · chicomint</title>`) + `<main>${content}</main>` + footer;
+const footer = original.slice(original.indexOf('<footer'));
+export const layout = (title, content) => head.replace(/<title>[^]*?<\/title>/, `<title>${e(title)} · chicomint</title>`) + `<main id="main-content" class="my_stuff"><h1>${e(title)}</h1>${content}</main>` + footer;
 const dateLabel = date => { const [year, month, day] = date.split('-'); return `${month}/${day}/${year}`; };
 export function drawingsPage(drawings) {
   let html = cleanHtml(readFileSync(new URL('../../drawings.html', import.meta.url), 'utf8'));

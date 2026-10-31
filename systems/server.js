@@ -49,15 +49,13 @@ function publicFiles() {
     '/draw/gallery.js': 'draw/gallery.js',
   };
   for (const [url, path] of Object.entries(assets)) files.set(url, join(SYSTEMS, path));
-  for (const name of ['style.css', 'sakura.css', 'sakura-dark.css', 'cursor.css', 'visitor-stats.css', 'drawing-fullscreen.css', 'sitemap.xml', 'robots.txt']) {
+  for (const name of ['style.css', 'cursor.css', 'sitemap.xml', 'robots.txt']) {
     files.set('/' + name, join(ROOT, name));
   }
   const aliases = {
     '/realtime.js': '/cursor/client.js', '/cursor/style.css': '/cursor.css',
     '/drawing-board.js': '/draw/board.js', '/drawings.js': '/draw/gallery.js',
-    '/draw/fullscreen.css': '/drawing-fullscreen.css', '/site/style.css': '/style.css',
-    '/site/sakura.css': '/sakura.css', '/site/sakura-dark.css': '/sakura-dark.css',
-    '/visit/style.css': '/visitor-stats.css',
+    '/site/style.css': '/style.css',
   };
   for (const [url, target] of Object.entries(aliases)) files.set(url, files.get(target));
   for (const folder of ['media', 'picture', 'd', 'math']) scan(folder);

@@ -14,14 +14,15 @@ test('legacy HTML blogs preserve all posts, work without a database, and serve s
   const origin = 'http://127.0.0.1:' + app.server.address().port;
   // Checksums of the original legacy writing, independent of asset locations.
   for (const [path, count, textHash] of [
-    ['/blogs', 1, 'c62d10fc0491e8f701c1b8e56b316ab266cbfdf066129175ac2b49936c440a9c'],
-    ['/all_blog', 35, 'bc3fe5564fc685928dc83e1c660c09af3559c2578cc9f3520d77e0a1d74404a0'],
+    ['/blogs', 3, '6b3e1474ad5c2849fec0fc2477d8083e194af351f0cf6ccdf493fc4011e5ad9d'],
+    ['/all_blog', 37, '300433b9c892b3596bacbb3eea1e8bd1303020ffe85d858a47a46aaf2effb78b'],
   ]) {
     const response = await fetch(origin + path);
     assert.equal(response.status, 200);
     const html = await response.text(), $ = load(html);
     assert.equal($('user').length, count);
-    const text = $('body').text().replace(/\s+/g, ' ').trim();
+    // Hash only the original posts so navigation and layout can evolve.
+    const text = $('user').closest('p').text().replace(/\s+/g, ' ').trim();
     assert.equal(createHash('sha256').update(text).digest('hex'), textHash, 'Original writing is preserved');
     assert.doesNotMatch(html, /comment-form|comments\.js|comments\.css|blog-list|blog-body|\/api\/comments|\/cms\.css/);
     for (const src of new Set($('img').map((_, el) => $(el).attr('src')).get().filter(src => src.startsWith('/')))) {
