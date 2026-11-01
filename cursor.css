@@ -36,10 +36,6 @@
   white-space: nowrap;
 }
 
-@media (prefers-color-scheme: dark) {
-  .remote-cursor span { background: #222; color: #7fb82a; }
-}
-
 html,
 body {
   cursor: auto;

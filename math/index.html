@@ -3,9 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="color-scheme" content="light">
   <title>Math Larp :3</title>
   <style>
     :root {
+      color-scheme: only light;
       --bg-body: #fff;
       --bg-topbar: #f0f0f0;
       --bg-modebar: #fafafa;
@@ -20,21 +22,6 @@
       --accent-color: #4a90d9;
     }
 
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg-body: #121212;
-        --bg-topbar: #1e1e1e;
-        --bg-modebar: #181818;
-        --bg-game-area: #121212;
-        --bg-question: #1e1e1e;
-        --bg-input: #2a2a2a;
-        --text-main: #e0e0e0;
-        --text-secondary: #aaa;
-        --border-color: #333;
-        --btn-bg: #2a2a2a;
-        --btn-hover: #3a3a3a;
-      }
-    }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -187,10 +174,6 @@
     #feedback.correct { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
     #feedback.wrong   { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
 
-    @media (prefers-color-scheme: dark) {
-      #feedback.correct { background: #1b4332; color: #d4edda; border-color: #2d6a4f; }
-      #feedback.wrong   { background: #4a1c1c; color: #f8d7da; border-color: #721c24; }
-    }
   </style>
   <link rel="stylesheet" href="../cursor.css?v=5">
   <script src="../systems/cursor/client.js?v=5" defer></script>

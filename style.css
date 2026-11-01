@@ -1,6 +1,6 @@
 @font-face { font-family: "DotGothic16"; font-style: normal; font-weight: 400; font-display: swap; src: url("media/fonts/dotgothic16-latin.woff2") format("woff2"); }
 :root {
-  color-scheme: light dark; --page-bg: #fff; --surface: #fff; --ink: #171b1a; --heading-ink: #080e0c;
+  color-scheme: only light; --page-bg: #fff; --surface: #fff; --ink: #171b1a; --heading-ink: #080e0c;
   --muted: #707976; --line: #b9bfbc; --frame-line: #aaa; --mint: #407f78; --link: #3c7d70; --visited: #586d68;
   --hover: #32847b; --control-bg: #f0f5f3; --control-ink: #234b43; --control-line: #8eaaa3;
   --control-hover: #dbeae5; --input-line: #aab7b2; --pressed-bg: #d8e8df; --pressed-line: #547869;
@@ -9,17 +9,6 @@
   --layer-line: #a0b3a7; font-family: Arial, Helvetica, sans-serif; background: var(--page-bg); color: var(--ink);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --page-bg: #131917; --surface: #1b2320; --ink: #e4e9e6; --heading-ink: #f0f7f1; --muted: #a0ada5;
-    --line: #425149; --frame-line: #596a61; --mint: #8acbb9; --link: #95d4bf; --visited: #b3c9bf; --hover: #b2ecd8;
-    --control-bg: #28382f; --control-ink: #d9eadf; --control-line: #718e7d; --control-hover: #354d3f;
-    --input-line: #718e7d; --pressed-bg: #354d3f; --pressed-line: #a2d0b5; --bubble-bg: #202b25;
-    --bubble-line: #a7b9af; --bubble-shadow: rgb(255 255 255 / 35%); --footer-bg: #18201c; --footer-ink: #a0ada5;
-    --journal-line: #425149; --author-ink: #a1c9b5; --drawing-line: #718e7d; --layer-line: #718e7d;
-  }
-  .snowy_banner { box-shadow: inset 0 0 0 100vmax #06100d44; }
-}
 * { box-sizing: border-box; }
 body { margin: 0; font: 18px/1.45 Arial, Helvetica, sans-serif; }
 a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
