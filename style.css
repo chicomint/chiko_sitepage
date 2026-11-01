@@ -40,7 +40,9 @@ button:disabled { opacity: .5; cursor: not-allowed; }
 input, textarea, select { max-width: 100%; border: 1px solid var(--input-line); border-radius: 0; padding: 4px; background: var(--surface); color: var(--ink); }
 hr { border: 0; border-top: 1px solid var(--line); margin: 22px 0; }
 
-.chiko_box { display: grid; grid-template-columns: 25% minmax(0, 1fr); grid-template-rows: 250px auto auto; width: min(1172px, calc(100% - 40px)); margin: 22px auto; border: 1px solid var(--frame-line); background: var(--surface); }
+.chiko_site { display: flow-root; min-height: 100vh; background: var(--page-bg) url("media/stars.gif") repeat fixed; }
+
+.chiko_box { display: grid; grid-template-columns: 29% minmax(0, 1fr); grid-template-rows: 250px auto auto; width: min(850px, calc(100% - 40px)); margin: 22px auto; border: 1px solid var(--frame-line); background: var(--surface); }
 
 .snowy_banner { grid-column: 1 / -1; grid-row: 1; position: relative; isolation: isolate; overflow: hidden; border-bottom: 1px solid var(--line); background: #8598ac url("media/snowy-city-banner.jpg") center 53% / cover no-repeat; }
 .snowy_banner::before { content: ""; position: absolute; inset: 0; background: linear-gradient(105deg, var(--surface) 4%, color-mix(in srgb, var(--surface) 97%, transparent) 19%, color-mix(in srgb, var(--surface) 85%, transparent) 31%, color-mix(in srgb, var(--surface) 48%, transparent) 45%, color-mix(in srgb, var(--surface) 12%, transparent) 60%, transparent 74%); pointer-events: none; }
@@ -49,7 +51,7 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 22px 0; }
 .chiko_title:hover { color: var(--mint); }
 .tiny_face { position: absolute; z-index: 1; right: 12px; bottom: 10px; font: 11px/1.3 "DotGothic16", monospace; color: #f6fffc; text-shadow: 0 1px 3px #173d39; letter-spacing: .5px; }
 
-.left_side { min-width: 0; border-right: 1px solid var(--line); }
+.left_side { grid-column: 1; grid-row: 2; align-self: start; min-width: 0; border-right: 1px solid var(--line); }
 .side_box { border-bottom: 1px solid var(--line); padding: 11px 12px 12px; }
 .side_box h2 { font-size: 20px; margin-bottom: 4px; }
 .little_map { padding-top: 12px; }
@@ -57,6 +59,7 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 22px 0; }
 .little_map a[aria-current="page"] { color: var(--link); }
 .little_map a[aria-current="page"]::after { content: " ←"; display: inline-block; margin-left: 4px; font-size: 14px; text-decoration: none; }
 .visitor_box { padding-bottom: 9px; }
+.visitor_box iframe { display: block; max-width: 100%; margin: 0 auto; }
 .visitor_count { display: grid; grid-template-columns: 1fr auto; gap: 1px 5px; margin: 0 3px 9px; font-size: 16px; }
 .visitor_count dt, .visitor_count dd { margin: 0; }
 .visitor_count dd { text-align: right; font-variant-numeric: tabular-nums; color: var(--mint); }
@@ -65,6 +68,7 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 22px 0; }
 .blinkie { display: block; width: 150px; height: 20px; margin: 14px auto 0; image-rendering: pixelated; }
 .blinkie + .blinkie { margin-top: 5px; }
 
+.home_stuff, .my_stuff { grid-column: 2; grid-row: 2; align-self: start; min-width: 0; overflow-wrap: anywhere; }
 .home_stuff { min-width: 0; display: flex; flex-direction: column; }
 .hello_there { flex: 1; position: relative; isolation: isolate; overflow: hidden; padding: 32px 12px 0; }
 .hello_there::before { content: ""; position: absolute; z-index: -1; top: 12px; right: 0; width: 100%; height: 570px; background: url("media/3xxLizzyxx3.png") center 42% / cover no-repeat; filter: grayscale(1); opacity: .045; -webkit-mask-image: linear-gradient(transparent, #000 18%, #000 70%, transparent); mask-image: linear-gradient(transparent, #000 18%, #000 70%, transparent); }
@@ -81,10 +85,8 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 22px 0; }
 .witch_miku img { display: block; width: 100%; height: 230px; object-fit: contain; object-position: center bottom; }
 
 .button_corner { display: grid; grid-template-columns: 1fr; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-.tiny_buttons { display: flex; flex-wrap: nowrap; align-items: center; min-width: 0; gap: 7px; padding: 12px; overflow-x: auto; }
+.tiny_buttons { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; min-width: 0; gap: 7px; padding: 12px; overflow-x: auto; }
 .tiny_buttons > a { display: block; flex: 0 0 88px; width: 88px; height: 31px; text-decoration: none; }
-.tiny_buttons > a:first-child { margin-left: auto; }
-.tiny_buttons > a:last-child { margin-right: auto; }
 .tiny_buttons img { display: block; width: 88px; height: 31px; object-fit: contain; image-rendering: pixelated; background: var(--control-bg); font: 12px/1.2 monospace; text-align: center; color: var(--control-ink); }
 .tiny_buttons a:hover { outline: 1px dotted var(--mint); outline-offset: 2px; }
 .bye_bye { grid-column: 1 / -1; border-top: 1px solid var(--frame-line); padding: 16px 12px; background: var(--footer-bg); text-align: center; color: var(--footer-ink); font-size: 13px; }
@@ -124,7 +126,7 @@ user { display: block; margin: 0 0 12px; font: 13px/1.6 "DotGothic16", monospace
 #drawing-status { font-size: 14px; margin: 12px 0; }
 
 @media (max-width: 1050px) {
-  .chiko_box { grid-template-columns: 24% minmax(0, 1fr); grid-template-rows: 215px auto auto; }
+  .chiko_box { grid-template-rows: 215px auto auto; }
   .lil_intro h1 { font-size: 27px; }
   .lil_intro > p { font-size: 18px; }
   .miku_says p { font-size: 18px; }
@@ -132,7 +134,7 @@ user { display: block; margin: 0 0 12px; font: 13px/1.6 "DotGothic16", monospace
 }
 
 @media (max-width: 760px) {
-  .chiko_box { width: calc(100% - 24px); margin: 12px auto; grid-template-columns: 190px minmax(0, 1fr); grid-template-rows: 180px auto auto; }
+  .chiko_box { width: calc(100% - 24px); margin: 12px auto; grid-template-rows: 180px auto auto; }
   .tiny_face { font-size: 9px; }
   .side_box { padding: 10px; }
   .side_box h2 { font-size: 18px; }
@@ -150,16 +152,19 @@ user { display: block; margin: 0 0 12px; font: 13px/1.6 "DotGothic16", monospace
   .thing_name { flex-wrap: wrap; font-size: 21px; }
 }
 
-@media (max-width: 540px) {
-  .chiko_box { width: calc(100% - 16px); margin: 8px auto; grid-template-columns: 1fr; grid-template-rows: 145px auto auto auto; }
+@media (max-width: 640px) {
+  .chiko_box { grid-template-columns: minmax(0, 1fr); grid-template-rows: 180px auto auto auto; }
+  .home_stuff, .my_stuff { grid-column: 1; grid-row: 3; }
+  .bye_bye { grid-row: 4; }
+}
 
-  .left_side { display: contents; }
-  .little_map { grid-column: 1; grid-row: 2; display: flex; flex-wrap: wrap; column-gap: 16px; row-gap: 4px; padding: 11px 16px 13px; }
+@media (max-width: 540px) {
+  .chiko_box { width: calc(100% - 16px); margin: 8px auto; grid-template-rows: 145px auto auto auto; }
+
+  .little_map { display: flex; flex-wrap: wrap; column-gap: 16px; row-gap: 4px; padding: 11px 16px 13px; }
   .little_map h2 { flex-basis: 100%; font-size: 16px; margin-bottom: 3px; color: var(--muted); }
   .little_map a { margin: 0; line-height: 1.55; font-size: 15px; }
   .little_map a[aria-current="page"]::after { display: none; }
-  .home_stuff, .my_stuff { grid-column: 1; grid-row: 3; }
-  .left_side .visitor_box, .miku_kitty { display: none; }
   .hello_there { padding: 25px 16px 0; }
   .lil_intro h1 { font-size: 28px; line-height: 1.2; }
   .lil_intro > p { line-height: 1.55; }
@@ -169,7 +174,7 @@ user { display: block; margin: 0 0 12px; font: 13px/1.6 "DotGothic16", monospace
   .witch_miku { flex-basis: 44%; }
   .witch_miku img { height: 190px; }
   .tiny_buttons { padding: 14px 12px 12px; gap: 9px 7px; }
-  .bye_bye { grid-row: 4; padding: 14px 16px; font-size: 11px; }
+  .bye_bye { padding: 14px 16px; font-size: 11px; }
   .my_stuff { padding: 25px 16px 32px; }
   .my_stuff > h1 { font-size: 30px; margin-bottom: 22px; }
   .drawing-tools { gap: 7px; font-size: 12px; }
