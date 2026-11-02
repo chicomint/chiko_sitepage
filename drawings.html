@@ -7,10 +7,11 @@
   <meta name="color-scheme" content="light">
   <title>drawing board · chicomint</title>
   <link rel="icon" href="media/chiki.ico">
-  <link rel="stylesheet" href="style.css?v=3.2">
+  <link rel="stylesheet" href="style.css?v=3.6">
   <link rel="stylesheet" href="cursor.css?v=5">
   <script src="systems/cursor/client.js?v=5" defer></script>
   <script src="media/sidebar-image.js?v=2" defer></script>
+  <script src="media/site-interactions.js?v=2" defer></script>
   <script src="systems/draw/board.js?v=2" defer></script>
   <script src="systems/draw/gallery.js?v=4" defer></script>
 </head>
@@ -18,18 +19,18 @@
 
   <div class="chiko_box">
     <header class="snowy_banner" aria-label="Site header">
-      <a class="chiko_title" href="index.html">Chicomint'site&lt;3</a>
+      <a class="chiko_title" href="index.html" title="back home &lt;3">Chicomint'site&lt;3</a>
       <span class="tiny_face">(๑・ω・๑)</span>
     </header>
     <aside class="left_side" aria-label="Site sidebar">
       <nav class="little_map side_box" aria-label="Main navigation">
         <h2>navigation</h2>
-        <a href="index.html">home</a>
-        <a href="blogs.html">blog</a>
-        <a href="project.html">projects</a>
-        <a href="drawings.html" aria-current="page">drawings</a>
-        <a href="credits.html">credits</a>
-        <a href="https://chicomint.atabook.org/">guestbook</a>
+        <a href="index.html" title="back to my little corner">home</a>
+        <a href="blogs.html" title="what i've been up to">blog</a>
+        <a href="project.html" title="things i've made">projects</a>
+        <a href="drawings.html" title="leave a little drawing :3" aria-current="page">drawings</a>
+        <a href="credits.html" title="artwork, fonts &amp; thank-yous">credits</a>
+        <a href="https://chicomint.atabook.org/" title="leave a hello in my guestbook">guestbook</a>
       </nav>
       <section class="side_box visitor_box" aria-labelledby="stats-title">
         <h2 id="stats-title">site stats</h2>
@@ -59,17 +60,17 @@
             Your browser needs canvas support to draw here.
         </canvas>
 <div class="drawing-tools" role="group" aria-label="Drawing tools">
-<label for="drawing-color">Color</label><input id="drawing-color" type="color" value="#222222">
-<label for="drawing-size">Size</label><input id="drawing-size" type="range" min="1" max="64" value="4"><output id="drawing-size-value" for="drawing-size">4</output>
-<button id="drawing-draw" data-drawing-tool="draw" type="button" aria-pressed="true">Draw</button>
-<button id="drawing-erase" data-drawing-tool="erase" type="button" aria-pressed="false">Eraser</button>
-<button id="drawing-undo" type="button" disabled>Undo</button><button id="drawing-redo" type="button" disabled>Redo</button>
-<button id="drawing-clear" type="button" title="Clear all drawings on every layer">Clear All</button><button id="drawing-download" type="button">Download</button>
-<button id="drawing-send" type="button">Send drawing</button>
+<label for="drawing-color">Color</label><input id="drawing-color" type="color" value="#222222" title="choose your brush color">
+<label for="drawing-size">Size</label><input id="drawing-size" type="range" min="1" max="64" value="4" title="change the brush or eraser size"><output id="drawing-size-value" for="drawing-size">4</output>
+<button id="drawing-draw" data-drawing-tool="draw" type="button" aria-pressed="true" title="draw on the selected layer">Draw</button>
+<button id="drawing-erase" data-drawing-tool="erase" type="button" aria-pressed="false" title="erase from the selected layer">Eraser</button>
+<button id="drawing-undo" type="button" title="undo the last drawing or layer change" disabled>Undo</button><button id="drawing-redo" type="button" title="bring back the change you just undid" disabled>Redo</button>
+<button id="drawing-clear" type="button" title="Clear all drawings on every layer">Clear All</button><button id="drawing-download" type="button" title="save your drawing as a PNG">Download</button>
+<button id="drawing-send" type="button" title="share your drawing in the gallery below">Send drawing</button>
 </div>
-<details class="drawing-layer-panel" open><summary>Layers</summary><div id="drawing-layers" aria-label="Drawing layers"></div>
-<div class="drawing-layer-actions"><button id="drawing-layer-add" type="button">Add</button><button id="drawing-layer-delete" type="button">Delete</button><button id="drawing-layer-up" type="button" title="Move layer toward the top">↑</button><button id="drawing-layer-down" type="button" title="Move layer toward the bottom">↓</button>
-<label class="layer-rename">Name <input id="drawing-layer-name" maxlength="40" aria-label="Layer name"></label><button id="drawing-layer-rename" type="button">Rename</button></div></details>
+<details class="drawing-layer-panel" open><summary title="show or hide the layer controls">Layers</summary><div id="drawing-layers" aria-label="Drawing layers"></div>
+<div class="drawing-layer-actions"><button id="drawing-layer-add" type="button" title="add an empty layer on top">Add</button><button id="drawing-layer-delete" type="button" title="delete the selected layer">Delete</button><button id="drawing-layer-up" type="button" aria-label="Move layer up" title="Move layer toward the top">↑</button><button id="drawing-layer-down" type="button" aria-label="Move layer down" title="Move layer toward the bottom">↓</button>
+<label class="layer-rename">Name <input id="drawing-layer-name" maxlength="40" aria-label="Layer name"></label><button id="drawing-layer-rename" type="button" title="give the selected layer this name">Rename</button></div></details>
         <p id="drawing-status" role="status" aria-live="polite"></p>
         <noscript>Enable JavaScript to draw. Visitor drawings are shown below.</noscript>
         <h2>Other people's drawings</h2>
