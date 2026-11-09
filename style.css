@@ -40,7 +40,7 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 22px 0; }
 .chiko_title:hover { color: var(--mint); }
 .tiny_face { position: absolute; z-index: 1; right: 12px; bottom: 10px; font: 11px/1.3 "DotGothic16", monospace; color: #f6fffc; text-shadow: 0 1px 3px #173d39; letter-spacing: .5px; }
 
-.left_side { grid-column: 1; grid-row: 2; align-self: start; min-width: 0; border-right: 1px solid var(--line); }
+.left_side { grid-column: 1; grid-row: 2; align-self: stretch; min-width: 0; border-right: 1px solid var(--line); }
 .side_box { border-bottom: 1px solid var(--line); padding: 11px 12px 12px; }
 .side_box h2 { font-size: 20px; margin-bottom: 4px; }
 .little_map { padding-top: 12px; }
