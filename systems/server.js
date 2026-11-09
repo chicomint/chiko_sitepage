@@ -20,7 +20,8 @@ const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 
   '.png': 'image/png', '.gif': 'image/gif', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg',
   '.webp': 'image/webp', '.svg': 'image/svg+xml', '.ico': 'image/x-icon', '.cur': 'image/x-icon',
   '.ani': 'application/octet-stream', '.mp3': 'audio/mpeg', '.mp4': 'video/mp4',
-  '.txt': 'text/plain', '.xml': 'application/xml', '.woff2': 'font/woff2' };
+  '.txt': 'text/plain', '.xml': 'application/xml', '.woff2': 'font/woff2',
+  '.wasm': 'application/wasm', '.gz': 'application/gzip' };
 
 // Explicitly publish website files, never the whole project directory.
 function publicFiles() {

@@ -7,11 +7,20 @@
   <meta name="color-scheme" content="light">
   <title>chicomint</title>
   <link rel="icon" href="media/chiki.ico">
-  <link rel="stylesheet" href="style.css?v=3.6">
+  <link rel="stylesheet" href="https://electric-tenshi.nekoweb.org/vocaring/vocaring.css">
+  <link rel="stylesheet" href="style.css?v=3.7">
+  <link rel="stylesheet" href="media/chess/vendor/chessground/base.css">
+  <link rel="stylesheet" href="media/chess/vendor/chessground/theme.css">
+  <link rel="stylesheet" href="media/chess/chess.css?v=1">
   <link rel="stylesheet" href="cursor.css?v=5">
   <script src="systems/cursor/client.js?v=5" defer></script>
   <script src="media/sidebar-image.js?v=2" defer></script>
   <script src="media/site-interactions.js?v=2" defer></script>
+  <script src="media/chess/vendor/chess.js/chess.js" defer></script>
+  <script src="media/chess/vendor/chessground/chessground.js" defer></script>
+  <script src="media/chess/chess.js?v=1" defer></script>
+  <script src="https://electric-tenshi.nekoweb.org/vocaring/vocaring-variables.js" defer></script>
+  <script src="https://electric-tenshi.nekoweb.org/vocaring/vocaring-widget.js" defer></script>
 
 </head>
 <body class="chiko_site">
@@ -41,7 +50,7 @@
 
       </section>
 
-      <section class="side_box visitor_box" aria-labelledby="stats-title">
+      <section class="side_box visitor_box" aria-label="Webrings">
         <iframe width="180" height="180" style="border:none" src="https://nvlk.dimden.dev/" name="neolink" title="Neolink"></iframe>
       </section>
 
@@ -71,6 +80,50 @@
           </div>
         </div>
       </section>
+
+      <p style="text-align: center;">I've wait for it...</p>
+      <div id="vocaring" class="small" style="margin-top: 12px;">
+        <a href="https://electric-tenshi.nekoweb.org/vocaring/home">VOCALOID Webring</a>
+      </div>
+
+      <section class="chess-corner" aria-labelledby="chess-title">
+        <h2 id="chess-title">a little chess? :3</h2>
+        <div class="chess-settings">
+          <label for="chess-difficulty">Difficulty
+            <select id="chess-difficulty">
+              <option value="gentle">Gentle</option>
+              <option value="easy" selected>Easy</option>
+              <option value="medium">Medium</option>
+              <option value="hard">Hard</option>
+              <option value="expert">Expert</option>
+            </select>
+          </label>
+          <label for="chess-color">Play as
+            <select id="chess-color">
+              <option value="w">White</option>
+              <option value="b">Black</option>
+            </select>
+          </label>
+        </div>
+        <p id="chess-status" class="chess-status" role="status" aria-live="polite">Loading the board…</p>
+        <div class="chess-board-wrap">
+          <div id="chess-board" class="chess-board" role="group" aria-label="Chessboard" aria-describedby="chess-help" tabindex="0"></div>
+          <button id="chess-enlarge" class="chess-enlarge" type="button" aria-label="Enlarge chessboard to play" title="click to enlarge and play :3"><span aria-hidden="true">⛶</span></button>
+        </div>
+        <button id="chess-shrink" class="chess-shrink" type="button" hidden>Make smaller</button>
+        <div id="chess-promotion" class="chess-promotion" role="group" aria-label="Promote your pawn" hidden>
+          <span>Promote to:</span>
+          <button type="button" data-promotion="q">Queen</button>
+          <button type="button" data-promotion="r">Rook</button>
+          <button type="button" data-promotion="b">Bishop</button>
+          <button type="button" data-promotion="n">Knight</button>
+          <button type="button" data-promotion="cancel">Cancel</button>
+        </div>
+        <button id="chess-start" class="chess-restart" type="button" hidden>Play again</button>
+        <p id="chess-help" class="chess-help">Select a piece, then a highlighted square. Use arrow keys to explore, Enter to select, and Escape to cancel.</p>
+        <noscript><p>Enable JavaScript to play chess.</p></noscript>
+      </section>
+
       <section class="button_corner" aria-label="Around the site and the web">
 
         <div class="tiny_buttons">

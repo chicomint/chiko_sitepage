@@ -14,6 +14,7 @@
     "test:drawings": "node --test test/drawings.test.js test/drawing-storage.test.js",
     "verify:migration": "node --env-file-if-exists=../.env scripts/verify-migration.js",
     "verify:local": "node scripts/verify-local-html.js",
+    "verify:chess": "node scripts/chess-check.js",
     "check": "node scripts/check.js"
   },
   "dependencies": {

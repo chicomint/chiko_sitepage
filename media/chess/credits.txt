@@ -1,0 +1,46 @@
+HOMEPAGE CHESS — CREDITS AND SOURCE
+
+Stockfish 10 (stockfish.js 10.0.2)
+Copyright T. Romstad, M. Costalba, J. Kiiski, G. Linscott and contributors.
+Browser compilation by Niklas Fiekas; multi-variant support by Daniel Dugovic
+and contributors. Distributed unmodified under GPL-3.0.
+Project: https://github.com/lichess-org/stockfish.js
+Exact source: https://github.com/lichess-org/stockfish.js/tree/e105072e84cf8ee5dd5219e2c5be29c3b8bf8a5a
+The same source, including build instructions, is available in
+vendor/stockfish/source.tar.gz next to the binaries.
+License: vendor/stockfish/LICENSE.txt
+Package: https://registry.npmjs.org/stockfish.js/-/stockfish.js-10.0.2.tgz
+This is Lichess's portable older engine, not its current server engine.
+
+chess.js 1.4.0
+Copyright Jeff Hlywa and contributors. BSD-2-Clause.
+Project/source: https://github.com/jhlywa/chess.js/tree/ce1ff9e9fc342984ff75ca475ab39f37888cb28a
+License: vendor/chess.js/LICENSE.txt
+Package: https://registry.npmjs.org/chess.js/-/chess.js-1.4.0.tgz
+The CommonJS build is wrapped in an IIFE to expose window.ChikoChessRules.
+The unavailable source-map directive is omitted; library code is unchanged.
+
+Cburnett SVG chess pieces
+Copyright Colin M.L. Burnett. GPL-2.0-or-later (used here under GPL-3.0).
+Unmodified SVG source files are provided in pieces/.
+Source: https://github.com/lichess-org/lila/tree/b0b0a5a21a28048c16906927487bef67c5a2bc71/public/piece/cburnett
+Attribution: https://github.com/lichess-org/lila/blob/b0b0a5a21a28048c16906927487bef67c5a2bc71/COPYING.md
+License: vendor/stockfish/LICENSE.txt
+
+Homepage chess interface (chess.js and chess.css in this folder)
+Copyright 2026 Chicomint. GPL-3.0-or-later.
+The full source is served in this folder, with no build step.
+License: vendor/stockfish/LICENSE.txt
+
+These components are provided without warranty; see their licenses.
+
+Chessground 10.5.0 — the Lichess board interface
+Copyright the Lichess authors. GPL-3.0-or-later.
+Project: https://github.com/lichess-org/chessground
+Package/source: https://registry.npmjs.org/@lichess-org/chessground/-/chessground-10.5.0.tgz
+Exact package with TypeScript sources: vendor/chessground/source.tar.gz
+License: vendor/chessground/LICENSE.txt
+Compiled without source changes into a classic browser script using:
+npm exec --yes --package=esbuild@0.25.12 -- esbuild PACKAGE/dist/chessground.js --bundle --format=iife --global-name=ChikoChessground --legal-comments=inline --outfile=media/chess/vendor/chessground/chessground.js
+base.css is unmodified. theme.css keeps the upstream interaction styles;
+the brown background is replaced with the blue board in chess.css.
