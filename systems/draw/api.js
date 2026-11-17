@@ -100,7 +100,7 @@ function readBody(req) {
   });
 }
 
-// Bound CPU time and keep PNG work off the presence/WebSocket event loop.
+// Bound CPU time and keep PNG work off the HTTP event loop.
 function sanitizeAsync(buffer) {
   return new Promise((resolve, reject) => {
     const worker = new Worker(new URL('./worker.js', import.meta.url), { workerData: buffer,

@@ -1,4 +1,3 @@
-import { createCursorServer } from './cursor/server.js';
 import { canonicalPath, cleanHtml } from './site/urls.js';
 import { connectDatabase } from './draw/database.js';
 import { createDrawingStorage } from './draw/storage.js';
@@ -46,15 +45,14 @@ function publicFiles() {
     if (entry.isFile() && !entry.name.startsWith('.') && /\.html$/.test(entry.name)) files.set('/' + entry.name, join(ROOT, entry.name));
   }
   const assets = {
-    '/cursor/client.js': 'cursor/client.js', '/draw/board.js': 'draw/board.js',
+    '/draw/board.js': 'draw/board.js',
     '/draw/gallery.js': 'draw/gallery.js',
   };
   for (const [url, path] of Object.entries(assets)) files.set(url, join(SYSTEMS, path));
-  for (const name of ['style.css', 'cursor.css', 'sitemap.xml', 'robots.txt']) {
+  for (const name of ['style.css', 'sitemap.xml', 'robots.txt']) {
     files.set('/' + name, join(ROOT, name));
   }
   const aliases = {
-    '/realtime.js': '/cursor/client.js', '/cursor/style.css': '/cursor.css',
     '/drawing-board.js': '/draw/board.js', '/drawings.js': '/draw/gallery.js',
     '/site/style.css': '/style.css',
   };
@@ -64,8 +62,8 @@ function publicFiles() {
   return files;
 }
 
-export function createPresenceServer({
-  allowedOrigins = [], heartbeatMs = 15000, statsCsvPath = STATS_CSV,
+export function createSiteServer({
+  allowedOrigins = [], statsCsvPath = STATS_CSV,
   drawingsDirectory = join(SYSTEMS, 'data/drawings'), drawingsTrustedProxies = [], drawingsOptions = {},
   statsTrustedProxies = [], statsIpHeader = 'x-forwarded-for', statsOptions = {}, drawingStorage = null } = {}) {
   const clientIp = clientIpResolver({ trustedProxies: statsTrustedProxies, header: statsIpHeader });
@@ -77,7 +75,6 @@ export function createPresenceServer({
     if (path.endsWith('/')) return path + 'index.html';
     return files.has(path + '.html') ? path + '.html' : path;
   };
-  const publicPage = path => files.has(pageName(path)) && pageName(path).endsWith('.html');
   const server = createServer(async (req, res) => {
     try {
     res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -102,7 +99,7 @@ export function createPresenceServer({
     if (drawingStorage && (path === '/drawings' || path.startsWith('/uploads/'))) {
       if (!['GET', 'HEAD'].includes(req.method)) { res.writeHead(405).end(); return; }
       if (path.startsWith('/uploads/')) { await drawingStorage.serveImage(req, res, path.slice('/uploads/'.length)); return; }
-      if (visits.record(clientIp(req), req.method === 'GET')) cursors.broadcastStats();
+      visits.record(clientIp(req), req.method === 'GET');
       const html = req.method === 'HEAD' ? undefined : drawingsPage(await drawingStorage.list());
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' });
       res.end(html);
@@ -116,14 +113,13 @@ export function createPresenceServer({
     const file = files.get(pageName(path));
     if (!file) { res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' }).end(layout('Not found', '<h2>Page not found</h2><a href="/">Back home</a>')); return; }
     if (!['GET', 'HEAD'].includes(req.method)) { res.writeHead(405).end(); return; }
-    const newVisit = visits.record(clientIp(req), req.method === 'GET' && extname(file) === '.html');
-    if (newVisit) cursors.broadcastStats();
+    visits.record(clientIp(req), req.method === 'GET' && extname(file) === '.html');
     res.setHeader('Content-Type', TYPES[extname(file)] || 'application/octet-stream');
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('Cache-Control', 'no-cache');
     if (req.method === 'HEAD') { res.end(); return; }
-    if (path === '/') {
-      const totals = { online: cursors.onlineCount() };
+    if (extname(file) === '.html') {
+      const totals = {};
       const visitTotal = visits.counts().visits;
       if (visitTotal !== null) totals.visits = visitTotal;
       let html = readFileSync(file, 'utf8');
@@ -131,10 +127,9 @@ export function createPresenceServer({
         html = html.replace(new RegExp(`(data-presence-stat="${name}"[^>]*>)[^<]*`),
           (_, opening) => opening + value.toLocaleString('en-US'));
       }
-      res.end(cleanHtml(html));
+      res.end(cleanHtml(html, path));
       return;
     }
-    if (extname(file) === '.html') { res.end(cleanHtml(readFileSync(file, 'utf8'), path)); return; }
     const stream = createReadStream(file);
     stream.on('error', () => { if (!res.headersSent) res.writeHead(404); res.end(); });
     stream.pipe(res);
@@ -142,9 +137,7 @@ export function createPresenceServer({
   });
   server.requestTimeout = 30000;
   server.headersTimeout = 15000;
-  const cursors = createCursorServer({ server, allowedOrigins, heartbeatMs, counts: visits.counts, publicPage });
-  return { server, wss: cursors.wss, async close() {
-    await cursors.close();
+  return { server, async close() {
     await new Promise(done => server.close(done));
     await visits.close();
   } };
@@ -183,7 +176,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
     await store?.close();
     process.exit(1);
   }
-  const app = createPresenceServer({
+  const app = createSiteServer({
     drawingStorage,
     statsCsvPath,
     statsTrustedProxies: (process.env.STATS_TRUSTED_PROXIES || '').split(',').map(s => s.trim()).filter(Boolean),

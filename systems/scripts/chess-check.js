@@ -3,10 +3,10 @@ import { readFile, mkdtemp, mkdir, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { chromium } from 'playwright';
-import { createPresenceServer } from '../server.js';
+import { createSiteServer } from '../server.js';
 
 const folder = await mkdtemp(join(tmpdir(), 'chiko-chess-'));
-const app = createPresenceServer({ statsCsvPath: null, drawingsDirectory: join(folder, 'drawings') });
+const app = createSiteServer({ statsCsvPath: null, drawingsDirectory: join(folder, 'drawings') });
 await new Promise(resolve => app.server.listen(0, '127.0.0.1', resolve));
 const origin = 'http://127.0.0.1:' + app.server.address().port;
 const browser = await chromium.launch({ headless: true });
@@ -39,8 +39,7 @@ async function open({ fen, mobile = false, fallback = false } = {}) {
   }, fallback);
   const page = await context.newPage();
   page.on('pageerror', error => errors.push(error.message));
-  await page.goto(origin, { waitUntil: 'load' });
-  await page.locator('#chess-enlarge').click();
+  await page.goto(origin + '/chess', { waitUntil: 'load' });
   await humanTurn(page);
   return { context, page };
 }
@@ -69,6 +68,23 @@ async function piece(page, key) {
 }
 
 try {
+  {
+    const context = await browser.newContext();
+    await context.route('https://**/*', route => route.fulfill({ status: 200, body: '' }));
+    const page = await context.newPage();
+    const chessRequests = [];
+    page.on('request', request => { if (request.url().includes('/media/chess/')) chessRequests.push(request.url()); });
+    await page.goto(origin, { waitUntil: 'load' });
+    assert.equal(await page.locator('#chess-board').count(), 0);
+    assert.deepEqual(chessRequests, []);
+    await page.getByRole('navigation').getByRole('link', { name: 'chess', exact: true }).click();
+    await page.waitForURL(origin + '/chess');
+    assert.equal(await page.getByRole('heading', { name: 'chess', exact: true }).count(), 1);
+    assert.equal(await page.getByRole('navigation').locator('a[aria-current="page"]').textContent(), 'chess');
+    await humanTurn(page);
+    await context.close();
+    checks.push('homepage links to the dedicated chess page without loading chess assets');
+  }
   for (const [path, type] of [['stockfish.wasm', 'application/wasm'], ['source.tar.gz', 'application/gzip']]) {
     const response = await fetch(origin + '/media/chess/vendor/stockfish/' + path);
     assert.equal(response.status, 200);
@@ -78,8 +94,8 @@ try {
     const { context, page } = await open({ mobile });
     assert.equal(await page.locator('cg-board piece').count(), 32);
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
-    assert.ok(await page.locator('.snowy_banner').evaluate(el => getComputedStyle(el).backgroundImage.includes('/media/fog.jpg')));
-    assert.ok(await page.evaluate(() => document.querySelector('#vocaring').compareDocumentPosition(document.querySelector('.chess-corner')) & Node.DOCUMENT_POSITION_FOLLOWING));
+    assert.equal(await page.locator('#chess-enlarge, #chess-shrink, #chess-help').count(), 0);
+    assert.ok(await page.locator('#chess-status').evaluate(el => getComputedStyle(el).clipPath === 'none'));
     await page.locator('#chess-board').focus();
     await page.keyboard.press('Enter');
     await frame(page);
@@ -94,14 +110,8 @@ try {
     assert.match(await piece(page, 'e4'), /white pawn/);
     assert.equal(await page.locator('square.last-move').count(), 2);
     await page.locator('.chess-corner').screenshot({ path: new URL(mobile ? 'mobile.png' : 'desktop.png', artifacts).pathname });
-    await page.locator('#chess-shrink').click();
-    await frame(page);
-    assert.ok((await page.locator('cg-board').boundingBox()).width <= 256);
-    await page.locator('#chess-enlarge').click();
-    await frame(page);
-    assert.match(await piece(page, 'e4'), /white pawn/);
     await context.close();
-    checks.push(`${mobile ? 'mobile' : 'desktop'}: real Chessground, legal moves, keyboard, engine reply, resizing without reset`);
+    checks.push(`${mobile ? 'mobile' : 'desktop'}: real Chessground, legal moves, keyboard, engine reply`);
   }
   {
     const { context, page } = await open();

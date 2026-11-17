@@ -6,7 +6,7 @@ import { join } from 'node:path';
 import { once } from 'node:events';
 import { request } from 'node:http';
 import { PNG } from 'pngjs';
-import { createPresenceServer } from '../server.js';
+import { createSiteServer } from '../server.js';
 import { sanitizeDrawing, MAX_DRAWING_BYTES } from '../draw/api.js';
 
 function png({ marked = true, transparent = false, width = 640 } = {}) {
@@ -27,7 +27,7 @@ async function fixture(t, drawingsOptions = {}) {
   const directory = join(folder, 'images');
   let app;
   async function start() {
-    app = createPresenceServer({ statsCsvPath: null, drawingsDirectory: directory, drawingsOptions });
+    app = createSiteServer({ statsCsvPath: null, drawingsDirectory: directory, drawingsOptions });
     app.server.listen(0, '127.0.0.1');
     await once(app.server, 'listening');
     return `http://127.0.0.1:${app.server.address().port}`;

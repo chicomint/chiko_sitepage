@@ -57,7 +57,7 @@
     tooltip.style.top = Math.round(top) + 'px';
   }
 
-  function show(element, delay = 320, point = null) {
+  function show(element, delay = 120, point = null) {
     clearTimeout(hideTimer);
     if (active === element) { pointer = point; position(); return; }
     hide();
@@ -78,7 +78,7 @@
   document.addEventListener('pointerover', event => {
     if (event.pointerType === 'touch') return;
     const element = event.target.closest('[data-tooltip]');
-    if (element) show(element, 320, { x: event.clientX, y: event.clientY });
+    if (element) show(element, 120, { x: event.clientX, y: event.clientY });
   });
 
   document.addEventListener('pointermove', event => {

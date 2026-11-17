@@ -8,10 +8,10 @@ import { PNG } from 'pngjs';
 import { connectDatabase } from '../draw/database.js';
 import { createDrawingStorage } from '../draw/storage.js';
 import { migrate } from '../draw/migration.js';
-import { createPresenceServer } from '../server.js';
+import { createSiteServer } from '../server.js';
 
 const store = await connectDatabase('mongodb://127.0.0.1:27017/browser_test_' + randomBytes(8).toString('hex'));
-const app = createPresenceServer({ drawingStorage: createDrawingStorage(store), statsCsvPath: null, drawingsDirectory: '/tmp/chiko-browser-test-drawings' });
+const app = createSiteServer({ drawingStorage: createDrawingStorage(store), statsCsvPath: null, drawingsDirectory: '/tmp/chiko-browser-test-drawings' });
 let browser;
 const checks = [], errors = [], externalFailures = [];
 function check(value, name) { assert.ok(value, name); checks.push(name); }
@@ -31,16 +31,8 @@ try {
   await mkdir('systems/artifacts/improvements', { recursive: true });
   await page.goto(origin + '/', { waitUntil: 'domcontentloaded' });
   check(await page.locator('#discord-status, script[src*="discord-status"]').count() === 0, 'Homepage has no Discord status widget or script');
-  await page.waitForFunction(() => document.querySelector('[data-presence-stat=online]').textContent.trim() !== '—');
-  check(await page.locator('[data-presence-stat=visits], [data-presence-stat=online]').count() === 2, 'Homepage keeps Visits and On-site displays');
-  const visitorContext = await browser.newContext({ viewport: { width: 1280, height: 900 } });
-  const visitor = await visitorContext.newPage(); await setupPage(visitor); await visitor.goto(origin + '/');
-  await page.waitForFunction(() => document.querySelector('[data-presence-stat=online]').textContent.trim() === '2');
-  await visitor.mouse.move(150, 150);
-  await page.waitForFunction(() => document.querySelectorAll('.remote-cursor').length > 0);
-  check(true, 'Other visitor cursors and live counts remain functional');
-  check(await page.locator('.remote-cursor img').first().evaluate(el => el.src.endsWith('/media/miku-miku-oo-ee-oo/Normal_32.gif') && el.width === 32 && getComputedStyle(el).width === '32px'), 'Other visitors keep the original 32px Miku cursor');
-  await visitorContext.close();
+  check(await page.locator('[data-presence-stat=visits]').count() === 1, 'Homepage keeps total visits');
+  check(await page.locator('[data-presence-stat=online], script[src*="cursor/client"], .remote-cursor').count() === 0, 'Presence and shared cursors have been removed');
   await page.reload({ waitUntil: 'domcontentloaded' });
   await page.mouse.move(100, 100); await page.waitForTimeout(100);
   check(await page.locator('#miku-cursor').count() === 0 && await page.locator('body').evaluate(el => getComputedStyle(el).cursor === 'auto'), 'Local mouse uses the native browser cursor');

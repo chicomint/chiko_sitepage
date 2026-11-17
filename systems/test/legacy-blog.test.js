@@ -4,11 +4,11 @@ import { mkdtemp, rm } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { join } from 'node:path';
 import { load } from 'cheerio';
-import { createPresenceServer } from '../server.js';
+import { createSiteServer } from '../server.js';
 
 test('legacy HTML blogs preserve all posts, work without a database, and serve saved images', async t => {
   const folder = await mkdtemp('/tmp/chiko-legacy-blog-');
-  const app = createPresenceServer({ statsCsvPath: null, drawingsDirectory: join(folder, 'drawings') });
+  const app = createSiteServer({ statsCsvPath: null, drawingsDirectory: join(folder, 'drawings') });
   t.after(async () => { await app.close(); await rm(folder, { recursive: true, force: true }); });
   await new Promise(resolve => app.server.listen(0, '127.0.0.1', resolve));
   const origin = 'http://127.0.0.1:' + app.server.address().port;

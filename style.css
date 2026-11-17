@@ -115,11 +115,11 @@ user { display: block; margin: 0 0 12px; font: 13px/1.6 "DotGothic16", monospace
 .drawing-gallery figcaption { font-size: 12px; margin-top: 4px; }
 #drawing-status { font-size: 14px; margin: 12px 0; }
 
-/* Little paper labels, using the same square edges and mint as the tools. */
+/* Compact black hover labels, matching the reference tooltip. */
 .site-tooltip {
-  position: fixed; z-index: 1000; width: max-content; max-width: min(250px, calc(100vw - 16px));
-  padding: 4px 7px; border: 1px solid var(--control-line); background: var(--control-bg); color: var(--control-ink);
-  box-shadow: 2px 2px 0 var(--control-hover); font: 12px/1.5 "DotGothic16", monospace;
+  position: fixed; z-index: 1000; width: max-content; max-width: calc(100vw - 16px);
+  padding: 0 2px; border: 1px solid #777; border-radius: 3px; background: #000; color: #fff;
+  box-shadow: none; font: 16px/1.1 "Times New Roman", Times, serif;
   overflow-wrap: anywhere;
 }
 .site-tooltip[hidden] { display: none; }
@@ -137,7 +137,7 @@ user { display: block; margin: 0 0 12px; font: 13px/1.6 "DotGothic16", monospace
   .tiny_buttons > a:active { transform: translateY(1px) scale(1.02); }
   .witch_miku img { transform-origin: 60% 90%; }
   .witch_miku:focus-visible img { animation: miku-hello 450ms ease-in-out; }
-  .site-tooltip:not([hidden]) { animation: label-appear 100ms ease-out; }
+  .site-tooltip:not([hidden]) { animation: label-appear 120ms ease-out; }
 
   @media (hover: hover) and (pointer: fine) {
     .little_map a:hover { transform: translateX(3px); }
@@ -152,7 +152,10 @@ user { display: block; margin: 0 0 12px; font: 13px/1.6 "DotGothic16", monospace
   35% { transform: rotate(-2deg); }
   70% { transform: rotate(1deg); }
 }
-@keyframes label-appear { from { opacity: 0; } to { opacity: 1; } }
+@keyframes label-appear {
+  from { opacity: 0; transform: translateY(3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
 @media (max-width: 1050px) {
   .chiko_box { grid-template-rows: 215px auto auto; }

@@ -8,14 +8,14 @@ import { load } from 'cheerio';
 import { connectDatabase } from '../draw/database.js';
 import { migrate } from '../draw/migration.js';
 import { createDrawingStorage, storeImage } from '../draw/storage.js';
-import { createPresenceServer } from '../server.js';
+import { createSiteServer } from '../server.js';
 
 test('public drawing storage preserves legacy images and submissions without admin services', { timeout: 30000 }, async () => {
   const store = await connectDatabase('mongodb://127.0.0.1:27017/drawing_storage_' + randomBytes(8).toString('hex'));
   const folder = await mkdtemp('/tmp/chiko-drawing-storage-');
   let app, origin;
   async function start() {
-    app = createPresenceServer({ drawingStorage: createDrawingStorage(store, { maxDrawings: 9 }), statsCsvPath: null, drawingsDirectory: join(folder, 'drawings') });
+    app = createSiteServer({ drawingStorage: createDrawingStorage(store, { maxDrawings: 9 }), statsCsvPath: null, drawingsDirectory: join(folder, 'drawings') });
     await new Promise(resolve => app.server.listen(0, '127.0.0.1', resolve));
     origin = 'http://127.0.0.1:' + app.server.address().port;
   }

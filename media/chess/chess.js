@@ -1,4 +1,4 @@
-/* Homepage chess. Copyright 2026 Chicomint. SPDX-License-Identifier: GPL-3.0-or-later */
+/* Site chess. Copyright 2026 Chicomint. SPDX-License-Identifier: GPL-3.0-or-later */
 (() => {
   'use strict';
 
@@ -240,23 +240,6 @@
     keyboardFocus();
   });
 
-  const enlarge = find('enlarge'), shrink = find('shrink');
-  function setExpanded(expanded) {
-    root.classList.toggle('chess-expanded', expanded);
-    enlarge.hidden = expanded;
-    shrink.hidden = !expanded;
-    board.tabIndex = expanded ? 0 : -1;
-    if (expanded) {
-      if (!active) beginGame();
-      board.focus({ preventScroll: true });
-    } else enlarge.focus({ preventScroll: true });
-    // Recompute Chessground's drag/drop coordinates after its CSS size changes.
-    requestAnimationFrame(() => ground.redrawAll());
-  }
-  enlarge.addEventListener('click', () => setExpanded(true));
-  shrink.addEventListener('click', () => setExpanded(false));
-  board.tabIndex = -1;
-
   window.addEventListener('pagehide', () => {
     disconnect();
     if (active && !game.isGameOver()) {
@@ -264,15 +247,5 @@
       render();
     }
   });
-  render();
-  // Load the engine only when the little board comes into view or is used.
-  if ('IntersectionObserver' in window) {
-    const observer = new IntersectionObserver(entries => {
-      if (entries.some(entry => entry.isIntersecting)) {
-        observer.disconnect();
-        if (!active) beginGame();
-      }
-    });
-    observer.observe(board);
-  }
+  beginGame();
 })();

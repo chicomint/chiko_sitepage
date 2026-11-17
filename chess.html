@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Play a little chess against Stockfish. Choose your side and difficulty, then make your move.">
+  <meta name="color-scheme" content="light">
+  <title>chess · chicomint</title>
+  <link rel="icon" href="media/chiki.ico">
+  <link rel="stylesheet" href="style.css?v=3.9">
+  <script src="media/sidebar-image.js?v=2" defer></script>
+  <script src="media/site-interactions.js?v=2" defer></script>
+
+  <link rel="stylesheet" href="media/chess/vendor/chessground/base.css">
+  <link rel="stylesheet" href="media/chess/vendor/chessground/theme.css">
+  <link rel="stylesheet" href="media/chess/chess.css?v=2">
+  <script src="media/chess/vendor/chess.js/chess.js" defer></script>
+  <script src="media/chess/vendor/chessground/chessground.js" defer></script>
+  <script src="media/chess/chess.js?v=2" defer></script>
+</head>
+<body class="chiko_site">
+
+  <div class="chiko_box">
+    <header class="snowy_banner" aria-label="Site header">
+      <a class="chiko_title" href="index.html" title="back home &lt;3">Chicomint'site&lt;3</a>
+      <span class="tiny_face">(๑・ω・๑)</span>
+    </header>
+    <aside class="left_side" aria-label="Site sidebar">
+      <nav class="little_map side_box" aria-label="Main navigation">
+        <h2>navigation</h2>
+        <a href="index.html" title="back to my little corner">home</a>
+        <a href="blogs.html" title="what i've been up to">blog</a>
+        <a href="project.html" title="things i've made">projects</a>
+        <a href="drawings.html" title="leave a little drawing :3">drawings</a>
+        <a href="chess.html" title="play a little chess" aria-current="page">chess</a>
+        <a href="credits.html" title="artwork, fonts &amp; thank-yous">credits</a>
+        <a href="https://chicomint.atabook.org/" title="leave a hello in my guestbook">guestbook</a>
+        <a href="https://matrix.to/#/#chicomint:matrix.org" title="join my Matrix server">join my matrix server</a>
+      </nav>
+      <section class="side_box visitor_box" aria-labelledby="stats-title">
+        <h2 id="stats-title">site stats</h2>
+
+        <dl class="visitor_count" aria-label="Visitor statistics">
+          <dt>total visits</dt><dd data-presence-stat="visits" title="Includes historical visits">15,423</dd>
+        </dl>
+
+      </section>
+
+      <section class="side_box visitor_box" aria-label="Webrings">
+        <iframe width="180" height="180" style="border:none" src="https://nvlk.dimden.dev/" name="neolink" title="Neolink"></iframe>
+      </section>
+
+      <div class="miku_kitty">
+        <img class="random_pic" data-random-sidebar-image src="media/image/027f2e9193b1421b57f8c346864b5e76a4dcf06e.png" alt="" width="250" height="229" loading="lazy">
+
+        <img class="blinkie" src="media/e50.gif" alt="A little blinkie from my collection" width="150" height="20" loading="lazy">
+        <img class="blinkie" src="media/e116.gif" alt="Another favorite blinkie" width="150" height="20" loading="lazy">
+      </div>
+    </aside>
+    <main id="main-content" class="my_stuff chess-page">
+      <h1>chess</h1>
+      <section class="chess-corner" aria-labelledby="chess-title">
+        <h2 id="chess-title">a little chess? :3</h2>
+        <div class="chess-settings">
+          <label for="chess-difficulty">Difficulty
+            <select id="chess-difficulty">
+              <option value="gentle">Gentle</option>
+              <option value="easy" selected>Easy</option>
+              <option value="medium">Medium</option>
+              <option value="hard">Hard</option>
+              <option value="expert">Expert</option>
+            </select>
+          </label>
+          <label for="chess-color">Play as
+            <select id="chess-color">
+              <option value="w">White</option>
+              <option value="b">Black</option>
+            </select>
+          </label>
+        </div>
+        <p id="chess-status" class="chess-status" role="status" aria-live="polite">Loading the board…</p>
+        <div class="chess-board-wrap">
+          <div id="chess-board" class="chess-board" role="group" aria-label="Chessboard" tabindex="0"></div>
+        </div>
+        <div id="chess-promotion" class="chess-promotion" role="group" aria-label="Promote your pawn" hidden>
+          <span>Promote to:</span>
+          <button type="button" data-promotion="q">Queen</button>
+          <button type="button" data-promotion="r">Rook</button>
+          <button type="button" data-promotion="b">Bishop</button>
+          <button type="button" data-promotion="n">Knight</button>
+          <button type="button" data-promotion="cancel">Cancel</button>
+        </div>
+        <button id="chess-start" class="chess-restart" type="button" hidden>Play again</button>
+        <noscript><p>Enable JavaScript to play chess.</p></noscript>
+      </section>
+    </main>
+    <footer class="bye_bye">
+      <p>© 2022–2026 Chicomint</p>
+    </footer>
+  </div>
+</body>
+</html>
